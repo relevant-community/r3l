@@ -1,0 +1,9 @@
+syntax = "proto3";
+package r3l.r3l.v1beta1;
+
+option go_package = "github.com/relevant-community/r3l/x/r3l/types";
+
+// GenesisState defines the capability module's genesis state.
+message GenesisState {
+}
+
