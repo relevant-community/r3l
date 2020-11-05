@@ -18,7 +18,7 @@ import (
 )
 
 func SetScores(ctx sdk.Context, k keeper.Keeper, scores []types.Score) (*sdk.TxResponse, error) {
-	kb, err := keyring.New(sdk.KeyringServiceName(), "test", "/Users/slavab/r3ld", nil)
+	kb, err := keyring.New(sdk.KeyringServiceName(), "test", "~/r3ld", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get address from Keybase: %w", err)
 	}
@@ -52,7 +52,7 @@ func SetScores(ctx sdk.Context, k keeper.Keeper, scores []types.Score) (*sdk.TxR
 		WithSequence(account.GetSequence()).
 		WithKeybase(kb).
 		WithGas(200000).
-		WithGasPrices("0.00001token")
+		WithGasPrices("0.0token")
 
 	fmt.Println("seq", account.GetSequence(), account.GetAccountNumber())
 
