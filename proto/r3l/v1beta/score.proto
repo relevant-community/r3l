@@ -1,0 +1,27 @@
+syntax = "proto3";
+package r3l.r3l.v1beta1;
+
+option go_package = "github.com/relevant-community/r3l/x/r3l/types";
+
+import "gogoproto/gogo.proto";
+
+message MsgScore {
+  string id = 1;
+  int64 blockHeight = 2; 
+  int64 pRank = 3; 
+  int64 nRank = 4; 
+  bytes creator = 5 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+message Score {
+  string id = 1;
+  int64 blockHeight = 2; 
+  int64 pRank = 3; 
+  int64 nRank = 4; 
+}
+
+message MsgScores {
+  bytes creator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  repeated Score scores = 2 [(gogoproto.nullable) = false];
+  int64 blockHeight = 3; 
+}

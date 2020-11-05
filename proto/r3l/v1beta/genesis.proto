@@ -1,9 +1,16 @@
 syntax = "proto3";
 package r3l.r3l.v1beta1;
 
+import "r3l/v1beta/vote.proto";
+import "r3l/v1beta/rankSource.proto";
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/relevant-community/r3l/x/r3l/types";
 
 // GenesisState defines the capability module's genesis state.
 message GenesisState {
+  repeated MsgVote votes = 1 [(gogoproto.nullable) = false];
+  repeated MsgRankSource rankSource = 2 [(gogoproto.nullable) = false];
 }
+
 

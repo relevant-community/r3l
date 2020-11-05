@@ -9,6 +9,15 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+
+	//TODO
+	// genState.Votes = types.SanitizeGenesisBalances(genState.Votes)
+	for _, vote := range genState.Votes {
+		k.CreateVote(ctx, vote)
+	}
+	for _, rankSource := range genState.RankSource {
+		k.CreateRankSource(ctx, rankSource)
+	}
 }
 
 // ExportGenesis returns the capability module's exported genesis.

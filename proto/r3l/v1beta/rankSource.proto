@@ -1,0 +1,12 @@
+syntax = "proto3";
+package r3l.r3l.v1beta1;
+
+option go_package = "github.com/relevant-community/r3l/x/r3l/types";
+
+import "gogoproto/gogo.proto";
+
+message MsgRankSource {
+  bytes creator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string account = 2; 
+}
+

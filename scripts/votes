@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+for from in 2 3 4
+do
+  for to in 2 3 4
+  do
+    echo r3ld tx r3l create-vote $(r3ld keys show user$to --address --keyring-backend test) 10000 --chain-id r3l --from user$from --keyring-backend test
+    r3ld tx r3l create-vote $(r3ld keys show user$to --address --keyring-backend test) 10000 --chain-id r3l --from user$from --keyring-backend test
+  done
+done

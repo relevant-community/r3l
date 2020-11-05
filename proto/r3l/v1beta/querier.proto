@@ -3,6 +3,10 @@ package r3l.r3l.v1beta1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
+import "r3l/v1beta/rankSource.proto";
+import "r3l/v1beta/namespace.proto";
+import "r3l/v1beta/score.proto";
+import "r3l/v1beta/vote.proto";
 
 
 option go_package = "github.com/relevant-community/r3l/x/r3l/types";
@@ -10,6 +14,42 @@ option go_package = "github.com/relevant-community/r3l/x/r3l/types";
 // Query defines the gRPC querier service.
 service Query {
     // this line is used by starport scaffolding # 2
+	rpc AllRankSource(QueryAllRankSourceRequest) returns (QueryAllRankSourceResponse);
+	rpc AllNamespace(QueryAllNamespaceRequest) returns (QueryAllNamespaceResponse);
+	rpc AllScore(QueryAllScoreRequest) returns (QueryAllScoreResponse);
+	rpc AllVote(QueryAllVoteRequest) returns (QueryAllVoteResponse);
 }
 
 // this line is used by starport scaffolding # 3
+message QueryAllRankSourceRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllRankSourceResponse {
+	repeated MsgRankSource rankSource = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+message QueryAllNamespaceRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllNamespaceResponse {
+	repeated MsgNamespace namespace = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+message QueryAllScoreRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllScoreResponse {
+	repeated MsgScore score = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+message QueryAllVoteRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllVoteResponse {
+	repeated MsgVote vote = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

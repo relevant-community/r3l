@@ -1,9 +1,68 @@
 version: 1
+chain-id: r3l
+keyring-backend: test
 accounts:
   - name: user1
-    coins: ["1000token", "100000000stake"]
+    coins: ['1000token', '100000000stake']
   - name: user2
-    coins: ["500token"]
+    coins: ['500token']
+  - name: user3
+    coins: ['500token']
+  - name: user4
+    coins: ['500token']
+  - name: user5
+    coins: ['500token']
+
 validator:
   name: user1
-  staked: "100000000stake"
+  staked: '100000000stake'
+genesis:
+  app_state:
+    r3l:
+      rankSource:
+        - creator: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2
+          account: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2
+
+      votes:
+        - id: '0'
+          creator: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2
+          to: cosmos1n3j742e06a7lhd8kk54jlc86dfyud68h9p88uq
+          amount: 10000
+        - id: '1'
+          creator: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2
+          to: cosmos18ml3cx840njkksjrwe46paqej9uyr6j2jl8zfd
+          amount: 10000
+        - id: '3'
+          creator: cosmos18ml3cx840njkksjrwe46paqej9uyr6j2jl8zfd
+          to: cosmos14w0l38nm8zn3t6nz383dkax8t9yn5rgklcagya
+          amount: -10000
+        - id: '4'
+          creator: cosmos1n3j742e06a7lhd8kk54jlc86dfyud68h9p88uq
+          to: cosmos14w0l38nm8zn3t6nz383dkax8t9yn5rgklcagya
+          amount: 10000
+        - id: '5'
+          creator: cosmos14w0l38nm8zn3t6nz383dkax8t9yn5rgklcagya
+          to: voteFromNeg
+          amount: 10000
+    auth:
+      accounts:
+        - @type: '/cosmos.auth.v1beta1.BaseAccount'
+          address: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2
+          pub_key: null
+          account_number: '0'
+          sequence: '0'
+        - @type: '/cosmos.auth.v1beta1.BaseAccount'
+          address: cosmos1n3j742e06a7lhd8kk54jlc86dfyud68h9p88uq
+          pub_key: null
+          account_number: '1'
+          sequence: '0'
+        - @type: '/cosmos.auth.v1beta1.BaseAccount'
+          address: cosmos18ml3cx840njkksjrwe46paqej9uyr6j2jl8zfd
+          pub_key: null
+          account_number: '0'
+          sequence: '0'
+        - @type: '/cosmos.auth.v1beta1.BaseAccount'
+          address: cosmos14w0l38nm8zn3t6nz383dkax8t9yn5rgklcagya
+          pub_key: null
+          account_number: '0'
+          sequence: '0'
