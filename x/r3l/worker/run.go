@@ -13,18 +13,32 @@ import (
 )
 
 func RunWorker(ctx sdk.Context, k keeper.Keeper) {
-	fmt.Println("start block", ctx.BlockHeight(), ctx.ChainID())
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Failed to run worker", r)
+		}
+	}()
+
+	time.Sleep(4000 * time.Millisecond)
+	fmt.Println("start block", ctx.BlockHeight())
+
+	// test blow up gas
+	// for i := 0; i < 100000; i++ {
+	// 	k.GetAllVote(ctx)
+	// }
+
 	votes := k.GetAllVote(ctx)
 	scores := k.GetAllScore(ctx)
 	rankSources := k.GetAllRankSource(ctx)
 
-	f := func(ctx sdk.Context) {
-		time.Sleep(2000 * time.Millisecond)
-		updatedScores := ComputeRank(votes, scores, rankSources)
-		SetScores(ctx, k, updatedScores)
-		fmt.Println("end worker process", ctx.BlockHeight())
-	}
-	go f(ctx)
+	updatedScores := ComputeRank(votes, scores, rankSources)
+	SetScores(ctx, k, updatedScores)
+
+	fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
+	fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
+
+	endGas := ctx.BlockGasMeter().GasConsumed()
+	fmt.Println("end worker process", endGas)
 }
 
 func ComputeRank(votes []types.MsgVote, scores []types.MsgScore, rankSources []types.MsgRankSource) []types.Score {

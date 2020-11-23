@@ -1,6 +1,8 @@
 version: 1
 chain-id: r3l
 keyring-backend: test
+max-gas: '100'
+
 accounts:
   - name: user1
     coins: ['1000token', '100000000stake']
@@ -12,11 +14,13 @@ accounts:
     coins: ['500token']
   - name: user5
     coins: ['500token']
-
 validator:
   name: user1
   staked: '100000000stake'
 genesis:
+  consensus_params:
+    block:
+      max_gas: '2000000'
   app_state:
     r3l:
       rankSource:
