@@ -1,9 +1,7 @@
 package worker
 
 import (
-	"fmt"
 	"math"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/relevant-community/r3l/x/r3l/keeper"
@@ -12,36 +10,40 @@ import (
 	rep "github.com/relevant-community/reputation/non-deterministic"
 )
 
-func RunWorker(ctx sdk.Context, k keeper.Keeper) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Failed to run worker", r)
-		}
-	}()
+// func RunWorker(clientCtx) {
 
-	time.Sleep(4000 * time.Millisecond)
-	fmt.Println("start block", ctx.BlockHeight())
+// }
 
-	// test blow up gas
-	// for i := 0; i < 100000; i++ {
-	// 	k.GetAllVote(ctx)
-	// }
+func RunEmbeddedWorker(ctx sdk.Context, k keeper.Keeper) {
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		fmt.Println("Failed to run worker", r)
+	// 	}
+	// }()
 
-	votes := k.GetAllVote(ctx)
-	scores := k.GetAllScore(ctx)
-	rankSources := k.GetAllRankSource(ctx)
+	// time.Sleep(4000 * time.Millisecond)
+	// fmt.Println("start block", ctx.BlockHeight())
 
-	updatedScores := ComputeRank(votes, scores, rankSources)
-	SetScores(ctx, k, updatedScores)
+	// // test blow up gas
+	// // for i := 0; i < 100000; i++ {
+	// // 	k.GetAllVote(ctx)
+	// // }
 
-	fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
-	fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
+	// votes := k.GetAllVote(ctx)
+	// scores := k.GetAllScore(ctx)
+	// rankSources := k.GetAllRankSource(ctx)
 
-	endGas := ctx.BlockGasMeter().GasConsumed()
-	fmt.Println("end worker process", endGas)
+	// updatedScores := ComputeRank(votes, scores, rankSources)
+	// SetScores(ctx, k, updatedScores)
+
+	// fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
+	// fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
+
+	// endGas := ctx.BlockGasMeter().GasConsumed()
+	// fmt.Println("end worker process", endGas)
 }
 
-func ComputeRank(votes []types.MsgVote, scores []types.MsgScore, rankSources []types.MsgRankSource) []types.Score {
+func ComputeRank(votes []*types.MsgVote, scores []*types.MsgScore, rankSources []*types.MsgRankSource) []types.Score {
 	graph := rep.NewGraph(0.85, 1e-8, 0)
 
 	// set personalization vector
@@ -66,7 +68,7 @@ func ComputeRank(votes []types.MsgVote, scores []types.MsgScore, rankSources []t
 			NRank: toFixed(nRank),
 		}
 		updatedScores = append(updatedScores, score)
-		fmt.Println(id, pRank, nRank)
+		// fmt.Println(id, pRank, nRank)
 	}
 
 	graph.Rank(callback)

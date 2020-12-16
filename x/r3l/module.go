@@ -164,7 +164,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
 // returns no validator updates.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	go worker.RunWorker(ctx, am.keeper)
+	go worker.RunEmbeddedWorker(ctx, am.keeper)
 	blockGas := ctx.BlockGasMeter().GasConsumed()
 	fmt.Println("total gas used", blockGas)
 	return []abci.ValidatorUpdate{}

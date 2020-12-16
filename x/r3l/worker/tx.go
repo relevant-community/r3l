@@ -85,3 +85,30 @@ func SetScores(ctx sdk.Context, k keeper.Keeper, scores []types.Score) (*sdk.TxR
 	fmt.Println(res)
 	return res, nil
 }
+
+// func BroadcastTx(msgs []sdk.Msg, cliCtx Context, flagSet *pflag.FlagSet) (*sdk.TxResponse, error) {
+
+// 	tx.GenerateOrBroadcastTxCLI(cliCtx, flagSet, msgs)
+// 	// txBldr, err := utils.PrepareTxBuilder(txBldr, cliCtx)
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
+
+// 	// fromName := cliCtx.GetFromName()
+
+// 	// // build and sign the transaction
+// 	// fmt.Printf("\n\033[31m")
+// 	// txBytes, err := txBldr.BuildAndSign(fromName, "", msgs)
+// 	// fmt.Printf("\033[0m")
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
+
+// 	// // broadcast to a Tendermint node
+// 	// res, err := cliCtx.BroadcastTx(txBytes)
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
+
+// 	// return &res, cliCtx.PrintOutput(res)
+// }
