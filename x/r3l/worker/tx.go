@@ -1,114 +1,71 @@
 package worker
 
-import (
-	"fmt"
+// SetScores is a custom txBroadcast (not used anymore)
+// func SetScores(ctx sdk.Context, k keeper.Keeper, scores []types.Score) (*sdk.TxResponse, error) {
+// 	kb, err := keyring.New(sdk.KeyringServiceName(), "test", "~/r3ld", nil)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get address from Keybase: %w", err)
+// 	}
 
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+// 	acc, err := kb.Key("user1")
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	"github.com/cosmos/cosmos-sdk/client"
-	codecTypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
-	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+// 	accAddress := acc.GetAddress()
+// 	fmt.Println("From address", accAddress)
 
-	"github.com/relevant-community/r3l/x/r3l/keeper"
-	"github.com/relevant-community/r3l/x/r3l/types"
-)
+// 	// TODO the acc seq might be out of date, we should query rest endpoint for current seq
+// 	account := k.AccountKeeper.GetAccount(ctx, accAddress)
 
-func SetScores(ctx sdk.Context, k keeper.Keeper, scores []types.Score) (*sdk.TxResponse, error) {
-	kb, err := keyring.New(sdk.KeyringServiceName(), "test", "~/r3ld", nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get address from Keybase: %w", err)
-	}
+// 	interfaceRegistry := codecTypes.NewInterfaceRegistry()
+// 	marshaler := codec.NewProtoCodec(interfaceRegistry)
+// 	txCfg := authTx.NewTxConfig(marshaler, authTx.DefaultSignModes)
+// 	clientCtx := client.Context{}.
+// 		WithInterfaceRegistry(interfaceRegistry).
+// 		WithNodeURI("http://0.0.0.0:26657").
+// 		WithTxConfig(txCfg).
+// 		WithFromAddress(accAddress).
+// 		WithFromName("user1")
 
-	acc, err := kb.Key("user1")
-	if err != nil {
-		return nil, err
-	}
+// 	txf := tx.Factory{}.
+// 		WithTxConfig(txCfg).
+// 		WithAccountRetriever(authTypes.AccountRetriever{}).
+// 		WithChainID(ctx.ChainID()).
+// 		WithAccountNumber(account.GetAccountNumber()).
+// 		WithSequence(account.GetSequence()).
+// 		WithKeybase(kb).
+// 		WithGas(200000).
+// 		WithGasPrices("0.0token")
 
-	accAddress := acc.GetAddress()
-	fmt.Println("From address", accAddress)
+// 	fmt.Println("seq", account.GetSequence(), account.GetAccountNumber())
 
-	// TODO the acc seq might be out of date, we should query rest endpoint for current seq
-	account := k.AccountKeeper.GetAccount(ctx, accAddress)
+// 	msg := types.NewMsgScores(accAddress, ctx.BlockHeight(), scores)
 
-	interfaceRegistry := codecTypes.NewInterfaceRegistry()
-	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := authTx.NewTxConfig(marshaler, authTx.DefaultSignModes)
-	clientCtx := client.Context{}.
-		WithInterfaceRegistry(interfaceRegistry).
-		WithNodeURI("http://0.0.0.0:26657").
-		WithTxConfig(txCfg).
-		WithFromAddress(accAddress).
-		WithFromName("user1")
+// 	// TODO - we should use AccountRetriever to make sure we are using an up-todate sequence
+// 	// We could use this util method but AccountRetriever is causing issues because
+// 	// interfaceRegistry doesnt have AccountI
+// 	// err = tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 
-	txf := tx.Factory{}.
-		WithTxConfig(txCfg).
-		WithAccountRetriever(authTypes.AccountRetriever{}).
-		WithChainID(ctx.ChainID()).
-		WithAccountNumber(account.GetAccountNumber()).
-		WithSequence(account.GetSequence()).
-		WithKeybase(kb).
-		WithGas(200000).
-		WithGasPrices("0.0token")
+// 	txBuilder, err := tx.BuildUnsignedTx(txf, msg)
+// 	err = tx.Sign(txf, clientCtx.GetFromName(), txBuilder)
+// 	if err != nil {
+// 		fmt.Println("err", err)
+// 		return nil, fmt.Errorf("Failed to Generate and broadcast TX: %w", err)
+// 	}
 
-	fmt.Println("seq", account.GetSequence(), account.GetAccountNumber())
+// 	txBytes, err := clientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
+// 	if err != nil {
+// 		fmt.Println("err", err)
+// 		return nil, err
+// 	}
 
-	msg := types.NewMsgScores(accAddress, ctx.BlockHeight(), scores)
-
-	// TODO - we should use AccountRetriever to make sure we are using an up-todate sequence
-	// We could use this util method but AccountRetriever is causing issues because
-	// interfaceRegistry doesnt have AccountI
-	// err = tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-
-	txBuilder, err := tx.BuildUnsignedTx(txf, msg)
-	err = tx.Sign(txf, clientCtx.GetFromName(), txBuilder)
-	if err != nil {
-		fmt.Println("err", err)
-		return nil, fmt.Errorf("Failed to Generate and broadcast TX: %w", err)
-	}
-
-	txBytes, err := clientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
-	if err != nil {
-		fmt.Println("err", err)
-		return nil, err
-	}
-
-	// broadcast to a Tendermint node
-	res, err := clientCtx.BroadcastTxSync(txBytes)
-	if err != nil {
-		fmt.Println("err", err)
-		return nil, fmt.Errorf("Failed to Generate and broadcast TX: %w", err)
-	}
-	fmt.Println(res)
-	return res, nil
-}
-
-// func BroadcastTx(msgs []sdk.Msg, cliCtx Context, flagSet *pflag.FlagSet) (*sdk.TxResponse, error) {
-
-// 	tx.GenerateOrBroadcastTxCLI(cliCtx, flagSet, msgs)
-// 	// txBldr, err := utils.PrepareTxBuilder(txBldr, cliCtx)
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-
-// 	// fromName := cliCtx.GetFromName()
-
-// 	// // build and sign the transaction
-// 	// fmt.Printf("\n\033[31m")
-// 	// txBytes, err := txBldr.BuildAndSign(fromName, "", msgs)
-// 	// fmt.Printf("\033[0m")
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-
-// 	// // broadcast to a Tendermint node
-// 	// res, err := cliCtx.BroadcastTx(txBytes)
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-
-// 	// return &res, cliCtx.PrintOutput(res)
+// 	// broadcast to a Tendermint node
+// 	res, err := clientCtx.BroadcastTxSync(txBytes)
+// 	if err != nil {
+// 		fmt.Println("err", err)
+// 		return nil, fmt.Errorf("Failed to Generate and broadcast TX: %w", err)
+// 	}
+// 	fmt.Println(res)
+// 	return res, nil
 // }

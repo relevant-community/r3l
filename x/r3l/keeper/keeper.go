@@ -7,7 +7,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
 	// appparams "github.com/relevant-community/r3l/app/params"
 	"github.com/relevant-community/r3l/x/r3l/types"
@@ -15,19 +14,19 @@ import (
 
 type (
 	Keeper struct {
-		cdc           codec.Marshaler
-		storeKey      sdk.StoreKey
-		memKey        sdk.StoreKey
-		AccountKeeper authkeeper.AccountKeeper
+		cdc          codec.Marshaler
+		storeKey     sdk.StoreKey
+		memKey       sdk.StoreKey
+		oracleKeeper types.OracleKeeper
 	}
 )
 
-func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, accountKeeper authkeeper.AccountKeeper) *Keeper {
+func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, oracleKeeper types.OracleKeeper) *Keeper {
 	return &Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		memKey:        memKey,
-		AccountKeeper: accountKeeper,
+		cdc:          cdc,
+		storeKey:     storeKey,
+		memKey:       memKey,
+		oracleKeeper: oracleKeeper,
 	}
 }
 

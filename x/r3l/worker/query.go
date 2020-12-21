@@ -8,15 +8,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type QueryResult struct {
+type queryResult struct {
 	votes       []*types.MsgVote
 	scores      []*types.MsgScore
 	rankSources []*types.MsgRankSource
 }
 
-func QueryData(cmd *cobra.Command, clientCtx client.Context) (res QueryResult, err error) {
+func queryData(cmd *cobra.Command, clientCtx client.Context) (res queryResult, err error) {
 	pageReq, err := client.ReadPageRequest(cmd.Flags())
-	res = QueryResult{}
+	res = queryResult{}
 
 	if err != nil {
 		return res, err

@@ -98,11 +98,11 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome(appName), newApp, createSimappAndExport)
 
+	workerInstance := worker.Init(worker.RunWorkerProcess, 3)
+
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
-		// overwrite the start command here
-		worker.StartCmd(newApp, app.DefaultNodeHome(appName)),
-		worker.StartWorkerCmd(),
+		workerInstance.StartWorkerCmd(),
 
 		rpc.StatusCommand(),
 		queryCommand(),

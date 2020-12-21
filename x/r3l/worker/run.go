@@ -1,49 +1,40 @@
 package worker
 
 import (
+	"fmt"
 	"math"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/relevant-community/r3l/x/r3l/keeper"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/relevant-community/r3l/x/r3l/types"
+	"github.com/spf13/cobra"
 
 	rep "github.com/relevant-community/reputation/non-deterministic"
 )
 
-// func RunWorker(clientCtx) {
+// RunWorkerProcess is our custom worker code
+func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) {
+	queryData, err := queryData(cmd, clientCtx)
+	if err != nil {
+		fmt.Println("Error fetching data", err)
+		return
+	}
 
-// }
+	updatedScores := computeRank(queryData.votes, queryData.scores, queryData.rankSources)
 
-func RunEmbeddedWorker(ctx sdk.Context, k keeper.Keeper) {
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		fmt.Println("Failed to run worker", r)
-	// 	}
-	// }()
+	// We use BlockHeight - 1 to reflect that the scores were based on data from that block
+	msg := types.NewMsgScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
 
-	// time.Sleep(4000 * time.Millisecond)
-	// fmt.Println("start block", ctx.BlockHeight())
+	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 
-	// // test blow up gas
-	// // for i := 0; i < 100000; i++ {
-	// // 	k.GetAllVote(ctx)
-	// // }
-
-	// votes := k.GetAllVote(ctx)
-	// scores := k.GetAllScore(ctx)
-	// rankSources := k.GetAllRankSource(ctx)
-
-	// updatedScores := ComputeRank(votes, scores, rankSources)
-	// SetScores(ctx, k, updatedScores)
-
-	// fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
-	// fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
-
-	// endGas := ctx.BlockGasMeter().GasConsumed()
-	// fmt.Println("end worker process", endGas)
+	// TODO retry if the TX fails
+	if err != nil {
+		fmt.Println("TX ERROR", err)
+	}
 }
 
-func ComputeRank(votes []*types.MsgVote, scores []*types.MsgScore, rankSources []*types.MsgRankSource) []types.Score {
+// computeRank runs the pagerank algorithm
+func computeRank(votes []*types.MsgVote, scores []*types.MsgScore, rankSources []*types.MsgRankSource) []types.Score {
 	graph := rep.NewGraph(0.85, 1e-8, 0)
 
 	// set personalization vector
@@ -84,3 +75,35 @@ func toFixed(n float64) int64 {
 func toFloat(n int64) float64 {
 	return float64(n) / math.Pow(10, float64(precision))
 }
+
+// func RunWorker(clientCtx) {
+// }
+
+// func RunEmbeddedWorker(ctx sdk.Context, k keeper.Keeper) {
+// defer func() {
+// 	if r := recover(); r != nil {
+// 		fmt.Println("Failed to run worker", r)
+// 	}
+// }()
+
+// time.Sleep(4000 * time.Millisecond)
+// fmt.Println("start block", ctx.BlockHeight())
+
+// // test blow up gas
+// // for i := 0; i < 100000; i++ {
+// // 	k.GetAllVote(ctx)
+// // }
+
+// votes := k.GetAllVote(ctx)
+// scores := k.GetAllScore(ctx)
+// rankSources := k.GetAllRankSource(ctx)
+
+// updatedScores := ComputeRank(votes, scores, rankSources)
+// SetScores(ctx, k, updatedScores)
+
+// fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
+// fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
+
+// endGas := ctx.BlockGasMeter().GasConsumed()
+// fmt.Println("end worker process", endGas)
+// }

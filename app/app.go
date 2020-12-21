@@ -77,7 +77,11 @@ import (
 	r3lkeeper "github.com/relevant-community/r3l/x/r3l/keeper"
 	r3ltypes "github.com/relevant-community/r3l/x/r3l/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	"github.com/relevant-community/r3l/x/oracle"
+	oraclekeeper "github.com/relevant-community/r3l/x/oracle/keeper"
+	oracletypes "github.com/relevant-community/r3l/x/oracle/types"
 )
 
 var (
@@ -109,6 +113,7 @@ var (
 		transfer.AppModuleBasic{},
 		r3l.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		oracle.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -169,6 +174,7 @@ type App struct {
 
 	r3lKeeper r3lkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
+	oracleKeeper oraclekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -198,6 +204,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		r3ltypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		oracletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -296,11 +303,17 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.r3lKeeper = *r3lkeeper.NewKeeper(
-		appCodec, keys[r3ltypes.StoreKey], keys[r3ltypes.MemStoreKey], app.AccountKeeper,
+	// this line is used by starport scaffolding # stargate/app/keeperDefinition
+	app.oracleKeeper = *oraclekeeper.NewKeeper(
+		appCodec,
+		keys[oracletypes.StoreKey],
+		keys[oracletypes.MemStoreKey],
+		app.StakingKeeper,
 	)
 
-	// this line is used by starport scaffolding # stargate/app/keeperDefinition
+	app.r3lKeeper = *r3lkeeper.NewKeeper(
+		appCodec, keys[r3ltypes.StoreKey], keys[r3ltypes.MemStoreKey], app.oracleKeeper,
+	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -327,6 +340,7 @@ func New(
 		transferModule,
 		r3l.NewAppModule(appCodec, app.r3lKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
+		oracle.NewAppModule(appCodec, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -361,6 +375,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		r3ltypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
+		oracletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -535,6 +550,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
+	paramsKeeper.Subspace(oracletypes.ModuleName)
 
 	return paramsKeeper
 }

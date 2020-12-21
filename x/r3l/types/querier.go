@@ -1,9 +1,17 @@
 package types
 
-const (QueryListVote = "list-vote")
+const (
+	QueryListVote = "list-vote"
+)
 
-const (QueryListScore = "list-score")
+const (
+	QueryListScore = "list-score"
+)
 
-const (QueryListNamespace = "list-namespace")
+const (
+	QueryListNamespace = "list-namespace"
+)
 
-const (QueryListRankSource = "list-rankSource")
+const (
+	QueryListRankSource = "list-rankSource"
+)

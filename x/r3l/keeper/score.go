@@ -13,12 +13,13 @@ func (k Keeper) CreateScore(ctx sdk.Context, score types.MsgScore) {
 }
 
 func (k Keeper) SetScores(ctx sdk.Context, scoresMsg types.MsgScores) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ScoreKey))
-	for _, score := range scoresMsg.Scores {
-		score.BlockHeight = scoresMsg.BlockHeight
-		b := k.cdc.MustMarshalBinaryBare(&score)
-		store.Set(types.KeyPrefix(types.ScoreKey+score.Id), b)
-	}
+	// store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ScoreKey))
+	// for _, score := range scoresMsg.Scores {
+	// 	score.BlockHeight = scoresMsg.BlockHeight
+	// 	b := k.cdc.MustMarshalBinaryBare(&score)
+	// 	store.Set(types.KeyPrefix(types.ScoreKey+score.Id), b)
+	// }
+	k.oracleKeeper.CreateClaim(ctx, &scoresMsg)
 }
 
 func (k Keeper) GetAllScore(ctx sdk.Context) (msgs []types.MsgScore) {

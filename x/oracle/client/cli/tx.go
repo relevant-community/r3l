@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/relevant-community/r3l/x/r3l/types"
+	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -21,14 +21,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
-
-	cmd.AddCommand(CmdCreateRankSource())
-
-	cmd.AddCommand(CmdCreateNamespace())
-
-	cmd.AddCommand(CmdCreateScore())
-
-	cmd.AddCommand(CmdCreateVote())
+	// cmd.AddCommand(CmdCreateClaim())
 
 	return cmd
 }

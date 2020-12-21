@@ -1,0 +1,8 @@
+syntax = "proto3";
+package r3l.oracle.v1beta1;
+
+option go_package = "github.com/relevant-community/r3l/x/oracle/types";
+
+// GenesisState defines the oracle module's genesis state.
+message GenesisState {
+}

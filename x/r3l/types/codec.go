@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	exportedOracle "github.com/relevant-community/r3l/x/oracle/exported"
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
@@ -13,6 +14,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgScore{}, "r3l/CreateScore", nil)
 	cdc.RegisterConcrete(MsgScores{}, "r3l/SetScores", nil)
 	cdc.RegisterConcrete(MsgVote{}, "r3l/CreateVote", nil)
+
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -31,6 +33,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgVote{},
+	)
+	registry.RegisterInterface(
+		"r3l.oracle.v1beta1.Claim",
+		(*exportedOracle.Claim)(nil),
+		&MsgScores{},
 	)
 }
 

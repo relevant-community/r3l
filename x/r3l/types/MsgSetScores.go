@@ -3,6 +3,8 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/tendermint/tendermint/crypto/tmhash"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 var _ sdk.Msg = &MsgScore{}
@@ -37,4 +39,25 @@ func (msg *MsgScores) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "creator can't be empty")
 	}
 	return nil
+}
+
+// Claim types needed for oracle
+
+// Hash returns the hash of an Equivocation object.
+func (msg *MsgScores) Hash() tmbytes.HexBytes {
+	bz, err := msg.Marshal()
+	if err != nil {
+		panic(err)
+	}
+	return tmhash.Sum(bz)
+}
+
+// func (msg *MsgScores) String() string {
+// 	bz, _ := yaml.Marshal(msg)
+// 	return string(bz)
+// }
+
+// GetHeight returns the height at time of the Equivocation infraction.
+func (msg *MsgScores) GetHeight() int64 {
+	return msg.BlockHeight
 }

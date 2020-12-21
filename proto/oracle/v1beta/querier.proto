@@ -1,0 +1,24 @@
+syntax = "proto3";
+package r3l.oracle.v1beta1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/protobuf/any.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/relevant-community/r3l/x/oracle/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    // this line is used by starport scaffolding # 2
+	rpc AllClaim(QueryAllClaimRequest) returns (QueryAllClaimResponse);
+}
+
+// this line is used by starport scaffolding # 3
+message QueryAllClaimRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClaimResponse {
+	repeated google.protobuf.Any claim = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

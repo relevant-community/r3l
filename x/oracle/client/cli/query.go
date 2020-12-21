@@ -10,12 +10,12 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/relevant-community/r3l/x/r3l/types"
+	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd(queryRoute string) *cobra.Command {
-	// Group r3l queries under a subcommand
+	// Group oracle queries under a subcommand
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
@@ -26,13 +26,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 
-	cmd.AddCommand(CmdListRankSource())
+	cmd.AddCommand(CmdListClaim())
 
-	cmd.AddCommand(CmdListNamespace())
-
-	cmd.AddCommand(CmdListScore())
-
-	cmd.AddCommand(CmdListVote())
-
-	return cmd
+	return cmd 
 }
+
