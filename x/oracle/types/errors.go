@@ -8,5 +8,6 @@ import (
 
 // x/oracle module sentinel errors
 var (
-	ErrInvalidClaim = sdkerrors.Register(ModuleName, 2, "invalid claim")
+	ErrInvalidClaim  = sdkerrors.Register(ModuleName, 2, "invalid claim")
+	ErrNoClaimExists = sdkerrors.Register(ModuleName, 3, "no claim exits")
 )

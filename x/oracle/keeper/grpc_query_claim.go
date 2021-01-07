@@ -13,6 +13,37 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// Claim implements the Query/Claim gRPC method
+func (k Keeper) Claim(c context.Context, req *types.QueryClaimRequest) (*types.QueryClaimResponse, error) {
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if req.ClaimHash == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid hash")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	evidence, _ := k.GetClaim(ctx, req.ClaimHash)
+	if evidence == nil {
+		return nil, status.Errorf(codes.NotFound, "evidence %s not found", req.ClaimHash)
+	}
+
+	msg, ok := evidence.(proto.Message)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "can't protomarshal %T", msg)
+	}
+
+	evidenceAny, err := codectypes.NewAnyWithValue(msg)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &types.QueryClaimResponse{Claim: evidenceAny}, nil
+}
+
+// AllClaim implements the Query/AllClaim gRPC method
 func (k Keeper) AllClaim(c context.Context, req *types.QueryAllClaimRequest) (*types.QueryAllClaimResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")

@@ -1,18 +1,57 @@
 package keeper
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/relevant-community/r3l/x/oracle/exported"
+	"github.com/relevant-community/r3l/x/oracle/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func listClaim(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	msgs := keeper.GetAllClaim(ctx)
+func queryClaim(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	var params types.QueryClaimRequest
 
-	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, msgs)
+	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	evidence, ok := k.GetClaim(ctx, params.ClaimHash)
+	if !ok {
+		return nil, sdkerrors.Wrap(types.ErrNoClaimExists, params.ClaimHash.String())
+	}
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, evidence)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
-	return bz, nil
+	return res, nil
+}
+
+func queryAllClaims(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	var params types.QueryAllClaimParams
+
+	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	claims := k.GetAllClaim(ctx)
+
+	start, end := client.Paginate(len(claims), params.Page, params.Limit, 100)
+	if start < 0 || end < 0 {
+		claims = []exported.Claim{}
+	} else {
+		claims = claims[start:end]
+	}
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, claims)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
 }

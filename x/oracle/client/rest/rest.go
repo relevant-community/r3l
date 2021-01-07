@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	MethodGet = "GET"
+	MethodGet          = "GET"
+	RestParamClaimHash = "evidence-hash"
 )
 
 // RegisterRoutes registers oracle-related REST handlers to a router
@@ -22,6 +23,7 @@ func RegisterRoutes(clientCtx client.Context, r *mux.Router) {
 func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 	// this line is used by starport scaffolding # 3
 	r.HandleFunc("custom/oracle/"+types.QueryListClaim, listClaimHandler(clientCtx)).Methods("GET")
+	r.HandleFunc("custom/oracle/"+types.QueryClaim, queryClaimHandler(clientCtx)).Methods("GET")
 
 }
 

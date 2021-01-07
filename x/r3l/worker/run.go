@@ -6,31 +6,45 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	oracle "github.com/relevant-community/r3l/x/oracle/types"
 	"github.com/relevant-community/r3l/x/r3l/types"
+
 	"github.com/spf13/cobra"
 
 	rep "github.com/relevant-community/reputation/non-deterministic"
 )
 
 // RunWorkerProcess is our custom worker code
-func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) {
+func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
 	queryData, err := queryData(cmd, clientCtx)
 	if err != nil {
 		fmt.Println("Error fetching data", err)
-		return
+		return err
 	}
 
 	updatedScores := computeRank(queryData.votes, queryData.scores, queryData.rankSources)
 
 	// We use BlockHeight - 1 to reflect that the scores were based on data from that block
-	msg := types.NewMsgScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
+	// Construct the scoresMsg message first
+	scoresMsg := types.NewMsgScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
+	scoresMsg.ValidateBasic()
+	if err := scoresMsg.ValidateBasic(); err != nil {
+		return err
+	}
+	// then create the claim message and submit it to the oracle
+	submitClaimMsg, err := oracle.NewMsgCreateClaim(clientCtx.GetFromAddress(), scoresMsg)
+	if err := submitClaimMsg.ValidateBasic(); err != nil {
+		return err
+	}
 
-	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), submitClaimMsg)
 
 	// TODO retry if the TX fails
 	if err != nil {
 		fmt.Println("TX ERROR", err)
+		return err
 	}
+	return nil
 }
 
 // computeRank runs the pagerank algorithm

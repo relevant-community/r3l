@@ -19,7 +19,7 @@ func (k Keeper) SetScores(ctx sdk.Context, scoresMsg types.MsgScores) {
 	// 	b := k.cdc.MustMarshalBinaryBare(&score)
 	// 	store.Set(types.KeyPrefix(types.ScoreKey+score.Id), b)
 	// }
-	k.oracleKeeper.CreateClaim(ctx, &scoresMsg)
+	// k.oracleKeeper.CreateClaim(ctx, &scoresMsg)
 }
 
 func (k Keeper) GetAllScore(ctx sdk.Context) (msgs []types.MsgScore) {

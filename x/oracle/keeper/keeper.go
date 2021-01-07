@@ -15,7 +15,7 @@ type (
 		cdc           codec.Marshaler
 		storeKey      sdk.StoreKey
 		memKey        sdk.StoreKey
-		stakingKeeper types.StakingKeeper
+		StakingKeeper types.StakingKeeper
 	}
 )
 
@@ -24,7 +24,7 @@ func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, stakingKeeper
 		cdc:           cdc,
 		storeKey:      storeKey,
 		memKey:        memKey,
-		stakingKeeper: stakingKeeper,
+		StakingKeeper: stakingKeeper,
 	}
 }
 

@@ -11,12 +11,6 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-// func (k Keeper) CreateClaim(ctx sdk.Context, claim types.MsgClaim) {
-// 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
-// 	b := k.cdc.MustMarshalBinaryBare(&claim)
-// 	store.Set(types.KeyPrefix(types.ClaimKey), b)
-// }
-
 // CreateClaim sets Claim by hash in the module's KVStore.
 func (k Keeper) CreateClaim(ctx sdk.Context, claim exported.Claim) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
@@ -36,7 +30,7 @@ func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) (exported.Claim
 	return k.MustUnmarshalClaim(bz), true
 }
 
-// GetAllClaim returns all claim
+// GetAllClaim returns all claims
 func (k Keeper) GetAllClaim(ctx sdk.Context) (msgs []exported.Claim) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.ClaimKey))
@@ -44,7 +38,6 @@ func (k Keeper) GetAllClaim(ctx sdk.Context) (msgs []exported.Claim) {
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		// k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &msg)
 		claim := k.MustUnmarshalClaim(iterator.Value())
 		fmt.Println(claim)
 		msgs = append(msgs, claim)

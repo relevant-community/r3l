@@ -15,7 +15,7 @@ import (
 
 var once sync.Once
 
-type process func(*cobra.Command, client.Context)
+type process func(*cobra.Command, client.Context) error
 
 // Worker is a singleton type
 type Worker struct {
@@ -97,7 +97,10 @@ func (worker *Worker) StartWorkerCmd() *cobra.Command {
 					clientCtx.Height = blockHeight
 
 					// run main worker proces here
-					worker.runProcess(cmd, clientCtx)
+					err := worker.runProcess(cmd, clientCtx)
+					if err != nil {
+						fmt.Println("There was an error running the worker process")
+					}
 
 					fmt.Println("Finished worker process for block", blockHeight)
 				}()
