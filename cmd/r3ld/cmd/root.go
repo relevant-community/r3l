@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/relevant-community/r3l/app/params"
 
@@ -30,9 +30,11 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/relevant-community/r3l/app"
-	"github.com/relevant-community/r3l/x/r3l/worker"
+	r3lworker "github.com/relevant-community/r3l/cmd/r3ld/cmd/worker"
+	"github.com/relevant-community/r3l/worker"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -47,10 +49,10 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(app.DefaultNodeHome(appName))
+		WithHomeDir(app.DefaultNodeHome)
 
 	rootCmd := &cobra.Command{
-		Use:   appName,
+		Use:   app.Name + "d",
 		Short: "Stargate CosmosHub App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
@@ -78,7 +80,7 @@ func Execute(rootCmd *cobra.Command) error {
 	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
 	ctx = context.WithValue(ctx, server.ServerContextKey, server.NewDefaultContext())
 
-	executor := tmcli.PrepareBaseCmd(rootCmd, "", app.DefaultNodeHome(appName))
+	executor := tmcli.PrepareBaseCmd(rootCmd, "", app.DefaultNodeHome)
 	return executor.ExecuteContext(ctx)
 }
 
@@ -86,19 +88,20 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	authclient.Codec = encodingConfig.Marshaler
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome(appName)),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome(appName)),
+		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
-		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome(appName)),
-		genutilcli.ValidateGenesisCmd(app.ModuleBasics, encodingConfig.TxConfig),
-		AddGenesisAccountCmd(app.DefaultNodeHome(appName)),
+		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
+		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
+		AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome(appName), newApp, createSimappAndExport)
+	a := appCreator{encodingConfig}
+	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
-	workerInstance := worker.Init(worker.RunWorkerProcess, 3)
+	workerInstance := worker.Init(r3lworker.RunWorkerProcess)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -107,8 +110,12 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(app.DefaultNodeHome(appName)),
+		keys.Commands(app.DefaultNodeHome),
 	)
+}
+
+func addModuleInitFlags(startCmd *cobra.Command) {
+	crisis.AddModuleInitFlags(startCmd)
 }
 
 func queryCommand() *cobra.Command {
@@ -162,7 +169,11 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
-func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+type appCreator struct {
+	encCfg params.EncodingConfig
+}
+
+func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
 
 	if cast.ToBool(appOpts.Get(server.FlagInterBlockCache)) {
@@ -190,10 +201,11 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 	}
 
 	return app.New(
-		appName, logger, db, traceStore, true, skipUpgradeHeights,
+		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
-		app.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
+		a.encCfg,
+		appOpts, // Ideally, we would reuse the one created by NewRootCmd.
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
@@ -208,22 +220,27 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 	)
 }
 
-func createSimappAndExport(
-	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
-) (servertypes.ExportedApp, error) {
+// appExport creates a new simapp (optionally at a given height)
+func (a appCreator) appExport(
+	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
+	appOpts servertypes.AppOptions) (servertypes.ExportedApp, error) {
 
-	encCfg := app.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
-	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
-	var a *app.App
+	var anApp *app.App
+
+	homePath, ok := appOpts.Get(flags.FlagHome).(string)
+	if !ok || homePath == "" {
+		return servertypes.ExportedApp{}, errors.New("application home not set")
+	}
+
 	if height != -1 {
-		a = app.New(appName, logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg)
+		anApp = app.New(logger, db, traceStore, false, map[int64]bool{}, homePath, uint(1), a.encCfg, appOpts)
 
-		if err := a.LoadHeight(height); err != nil {
+		if err := anApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		a = app.New(appName, logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg)
+		anApp = app.New(logger, db, traceStore, true, map[int64]bool{}, homePath, uint(1), a.encCfg, appOpts)
 	}
 
-	return a.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	return anApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }

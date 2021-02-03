@@ -11,10 +11,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(MsgRankSource{}, "r3l/CreateRankSource", nil)
 	cdc.RegisterConcrete(MsgNamespace{}, "r3l/CreateNamespace", nil)
-	cdc.RegisterConcrete(MsgScore{}, "r3l/CreateScore", nil)
-	cdc.RegisterConcrete(MsgScores{}, "r3l/SetScores", nil)
 	cdc.RegisterConcrete(MsgVote{}, "r3l/CreateVote", nil)
-
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -25,19 +22,16 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgNamespace{},
 	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgScore{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgScores{},
-	)
+	// registry.RegisterImplementations((*sdk.Msg)(nil),
+	// 	&MsgScores{},
+	// )
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgVote{},
 	)
 	registry.RegisterInterface(
 		"r3l.oracle.v1beta1.Claim",
 		(*exportedOracle.Claim)(nil),
-		&MsgScores{},
+		&Scores{},
 	)
 }
 

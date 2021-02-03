@@ -14,19 +14,21 @@ import (
 
 type (
 	Keeper struct {
-		cdc          codec.Marshaler
-		storeKey     sdk.StoreKey
-		memKey       sdk.StoreKey
-		oracleKeeper types.OracleKeeper
+		cdc           codec.Marshaler
+		storeKey      sdk.StoreKey
+		memKey        sdk.StoreKey
+		oracleKeeper  types.OracleKeeper
+		stakingKeeper types.StakingKeeper
 	}
 )
 
-func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, oracleKeeper types.OracleKeeper) *Keeper {
+func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, oracleKeeper types.OracleKeeper, stakingKeeper types.StakingKeeper) *Keeper {
 	return &Keeper{
-		cdc:          cdc,
-		storeKey:     storeKey,
-		memKey:       memKey,
-		oracleKeeper: oracleKeeper,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		memKey:        memKey,
+		oracleKeeper:  oracleKeeper,
+		stakingKeeper: stakingKeeper,
 	}
 }
 

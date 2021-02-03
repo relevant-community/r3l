@@ -20,8 +20,7 @@ func CmdCreateVote() *cobra.Command {
 			argsTo := string(args[0])
 			argsAmount, _ := strconv.ParseInt(args[1], 10, 64)
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

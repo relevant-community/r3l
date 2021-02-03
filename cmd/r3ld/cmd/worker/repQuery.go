@@ -1,4 +1,4 @@
-package worker
+package r3lworker
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 type queryResult struct {
 	votes       []*types.MsgVote
-	scores      []*types.MsgScore
+	scores      []*types.Score
 	rankSources []*types.MsgRankSource
 }
 

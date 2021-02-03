@@ -26,8 +26,6 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdCreateNamespace())
 
-	cmd.AddCommand(CmdCreateScore())
-
 	cmd.AddCommand(CmdCreateVote())
 
 	return cmd

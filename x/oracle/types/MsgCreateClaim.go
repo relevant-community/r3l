@@ -10,25 +10,13 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
 
-// var _ sdk.Msg = &MsgClaim{}
-
-// func NewMsgClaim(creator sdk.AccAddress, blockNumber int32, hash string) *MsgClaim {
-// 	return &MsgClaim{
-// 		Id:          uuid.New().String(),
-// 		Creator:     creator,
-// 		BlockNumber: blockNumber,
-// 		Hash:        hash,
-// 	}
-// }
-
 var (
 	_ sdk.Msg                       = &MsgCreateClaim{}
 	_ types.UnpackInterfacesMessage = MsgCreateClaim{}
-	_ exported.MsgCreateClaim       = &MsgCreateClaim{}
+	_ exported.MsgCreateClaimI      = &MsgCreateClaim{}
 )
 
 // NewMsgCreateClaim returns a new MsgCreateClaim with a signer/submitter.
-//nolint:interfacer
 func NewMsgCreateClaim(s sdk.AccAddress, claim exported.Claim) (*MsgCreateClaim, error) {
 	msg, ok := claim.(proto.Message)
 	if !ok {
@@ -41,14 +29,17 @@ func NewMsgCreateClaim(s sdk.AccAddress, claim exported.Claim) (*MsgCreateClaim,
 	return &MsgCreateClaim{Submitter: s.String(), Claim: any}, nil
 }
 
+// Route get msg route
 func (msg *MsgCreateClaim) Route() string {
 	return RouterKey
 }
 
+// Type get msg type
 func (msg *MsgCreateClaim) Type() string {
 	return "CreateClaim"
 }
 
+// GetSigners get msg get signers
 func (msg *MsgCreateClaim) GetSigners() []sdk.AccAddress {
 	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
 	if err != nil {
@@ -58,11 +49,13 @@ func (msg *MsgCreateClaim) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{accAddr}
 }
 
+// GetSignBytes get msg get getsingbytes
 func (msg *MsgCreateClaim) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
+// ValidateBasic validation
 func (msg *MsgCreateClaim) ValidateBasic() error {
 	if msg.Submitter == "" {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "creator can't be empty")
@@ -71,30 +64,30 @@ func (msg *MsgCreateClaim) ValidateBasic() error {
 	if claim == nil {
 		return sdkerrors.Wrap(ErrInvalidClaim, "missing claim")
 	}
-	if err := claim.ValidateBasic(); err != nil {
-		return err
-	}
 
 	return nil
 }
 
-func (m MsgCreateClaim) GetClaim() exported.Claim {
-	evi, ok := m.Claim.GetCachedValue().(exported.Claim)
+// GetClaim get the claim
+func (msg MsgCreateClaim) GetClaim() exported.Claim {
+	claim, ok := msg.Claim.GetCachedValue().(exported.Claim)
 	if !ok {
 		return nil
 	}
-	return evi
+	return claim
 }
 
-func (m MsgCreateClaim) GetSubmitter() sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(m.Submitter)
+// GetSubmitter get the submitter
+func (msg MsgCreateClaim) GetSubmitter() sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
 	if err != nil {
 		return nil
 	}
 	return accAddr
 }
 
-func (m MsgCreateClaim) UnpackInterfaces(ctx types.AnyUnpacker) error {
+// UnpackInterfaces unpack
+func (msg MsgCreateClaim) UnpackInterfaces(ctx types.AnyUnpacker) error {
 	var claim exported.Claim
-	return ctx.UnpackAny(m.Claim, &claim)
+	return ctx.UnpackAny(msg.Claim, &claim)
 }

@@ -15,6 +15,10 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_capability"
+
+	// ScoreClaim defines a Score oracle claim type
+	// it should match an oracle claim_param set in genesis
+	ScoreClaim = "ScoreClaim"
 )
 
 func KeyPrefix(p string) []byte {

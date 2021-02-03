@@ -21,7 +21,16 @@ genesis:
   consensus_params:
     block:
       max_gas: '2000000'
+      oracle:
+
   app_state:
+    oracle:
+      params:
+        claim_params:
+          - vote_period: 3
+            claim_type: 'ScoreClaim'
+            prevote: false
+
     r3l:
       rankSource:
         - creator: cosmos19jyuqmf7jxd28f98kuw44dc5hqmg40fuugwzy2

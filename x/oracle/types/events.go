@@ -1,8 +1,8 @@
 package types
 
-// evidence module events
+// claim module events
 const (
 	AttributeValueCategory = "oracle"
-	// EventTypeSubmitClaim   = "submit_claim"
-	// AttributeKeyClaimHash = "evidence_hash"
+	EventTypeCreateClaim   = "create_claim"
+	AttributeKeyClaimHash  = "claim_hash"
 )

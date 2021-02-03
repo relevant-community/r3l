@@ -16,14 +16,14 @@ func (k Keeper) AllScore(c context.Context, req *types.QueryAllScoreRequest) (*t
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var scores []*types.MsgScore
+	var scores []*types.Score
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	scoreStore := prefix.NewStore(store, types.KeyPrefix(types.ScoreKey))
 
 	pageRes, err := query.Paginate(scoreStore, req.Pagination, func(key []byte, value []byte) error {
-		var score types.MsgScore
+		var score types.Score
 		if err := k.cdc.UnmarshalBinaryBare(value, &score); err != nil {
 			return err
 		}

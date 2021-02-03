@@ -1,4 +1,4 @@
-package worker
+package r3lworker
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ import (
 	rep "github.com/relevant-community/reputation/non-deterministic"
 )
 
-// RunWorkerProcess is our custom worker code
-func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
+// ComputeReputation is the reputation worker
+func ComputeReputation(cmd *cobra.Command, clientCtx client.Context) error {
 	queryData, err := queryData(cmd, clientCtx)
 	if err != nil {
 		fmt.Println("Error fetching data", err)
@@ -25,12 +25,9 @@ func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
 	updatedScores := computeRank(queryData.votes, queryData.scores, queryData.rankSources)
 
 	// We use BlockHeight - 1 to reflect that the scores were based on data from that block
-	// Construct the scoresMsg message first
-	scoresMsg := types.NewMsgScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
-	scoresMsg.ValidateBasic()
-	if err := scoresMsg.ValidateBasic(); err != nil {
-		return err
-	}
+	// Construct the scoresMsg me	ssage first
+	scoresMsg := types.NewScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
+
 	// then create the claim message and submit it to the oracle
 	submitClaimMsg, err := oracle.NewMsgCreateClaim(clientCtx.GetFromAddress(), scoresMsg)
 	if err := submitClaimMsg.ValidateBasic(); err != nil {
@@ -48,7 +45,7 @@ func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
 }
 
 // computeRank runs the pagerank algorithm
-func computeRank(votes []*types.MsgVote, scores []*types.MsgScore, rankSources []*types.MsgRankSource) []types.Score {
+func computeRank(votes []*types.MsgVote, scores []*types.Score, rankSources []*types.MsgRankSource) []types.Score {
 	graph := rep.NewGraph(0.85, 1e-8, 0)
 
 	// set personalization vector
@@ -89,35 +86,3 @@ func toFixed(n float64) int64 {
 func toFloat(n int64) float64 {
 	return float64(n) / math.Pow(10, float64(precision))
 }
-
-// func RunWorker(clientCtx) {
-// }
-
-// func RunEmbeddedWorker(ctx sdk.Context, k keeper.Keeper) {
-// defer func() {
-// 	if r := recover(); r != nil {
-// 		fmt.Println("Failed to run worker", r)
-// 	}
-// }()
-
-// time.Sleep(4000 * time.Millisecond)
-// fmt.Println("start block", ctx.BlockHeight())
-
-// // test blow up gas
-// // for i := 0; i < 100000; i++ {
-// // 	k.GetAllVote(ctx)
-// // }
-
-// votes := k.GetAllVote(ctx)
-// scores := k.GetAllScore(ctx)
-// rankSources := k.GetAllRankSource(ctx)
-
-// updatedScores := ComputeRank(votes, scores, rankSources)
-// SetScores(ctx, k, updatedScores)
-
-// fmt.Println("worker gas limit", ctx.BlockGasMeter().Limit(), ctx.GasMeter().GasConsumed())
-// fmt.Println("out of gas / is past limit", ctx.BlockGasMeter().IsOutOfGas(), ctx.BlockGasMeter().IsPastLimit())
-
-// endGas := ctx.BlockGasMeter().GasConsumed()
-// fmt.Println("end worker process", endGas)
-// }

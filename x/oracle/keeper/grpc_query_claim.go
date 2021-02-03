@@ -25,22 +25,22 @@ func (k Keeper) Claim(c context.Context, req *types.QueryClaimRequest) (*types.Q
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	evidence, _ := k.GetClaim(ctx, req.ClaimHash)
-	if evidence == nil {
-		return nil, status.Errorf(codes.NotFound, "evidence %s not found", req.ClaimHash)
+	claim := k.GetClaim(ctx, req.ClaimHash)
+	if claim == nil {
+		return nil, status.Errorf(codes.NotFound, "claim %s not found", req.ClaimHash)
 	}
 
-	msg, ok := evidence.(proto.Message)
+	msg, ok := claim.(proto.Message)
 	if !ok {
 		return nil, status.Errorf(codes.Internal, "can't protomarshal %T", msg)
 	}
 
-	evidenceAny, err := codectypes.NewAnyWithValue(msg)
+	claimAny, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClaimResponse{Claim: evidenceAny}, nil
+	return &types.QueryClaimResponse{Claim: claimAny}, nil
 }
 
 // AllClaim implements the Query/AllClaim gRPC method

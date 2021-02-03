@@ -4,12 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/relevant-community/r3l/x/oracle/exported"
 	"github.com/relevant-community/r3l/x/oracle/keeper"
 	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
-func handleMsgCreateClaim(ctx sdk.Context, k keeper.Keeper, msg exported.MsgCreateClaim) (*sdk.Result, error) {
+func handleMsgCreateClaim(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCreateClaim) (*sdk.Result, error) {
 	claim := msg.GetClaim()
 	validatorAddress := sdk.ValAddress(msg.GetSubmitter())
 
@@ -27,17 +26,15 @@ func handleMsgCreateClaim(ctx sdk.Context, k keeper.Keeper, msg exported.MsgCrea
 		return nil, sdkerrors.Wrap(staking.ErrNoValidatorFound, validatorAddress.String())
 	}
 
-	k.CreateClaim(ctx, claim)
-	// if err := k.CreateClaim(ctx, claim);
-	// err != nil {
-	// 	return nil, err
-	// }
+	// store the validator vote
+	k.CastVote(ctx, claim, validatorAddress)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
+			types.EventTypeCreateClaim,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.GetSubmitter().String()),
+			sdk.NewAttribute(types.AttributeKeyClaimHash, claim.Hash().String()),
 		),
 	)
 

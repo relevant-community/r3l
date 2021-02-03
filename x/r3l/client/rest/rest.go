@@ -49,8 +49,5 @@ func registerTxHandlers(clientCtx client.Context, r *mux.Router) {
 
 	r.HandleFunc("/r3l/namespace", createNamespaceHandler(clientCtx)).Methods("POST")
 
-	r.HandleFunc("/r3l/score", createScoreHandler(clientCtx)).Methods("POST")
-
 	r.HandleFunc("/r3l/vote", createVoteHandler(clientCtx)).Methods("POST")
-
 }

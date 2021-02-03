@@ -1,12 +1,14 @@
 package types
 
 import (
+	query "github.com/cosmos/cosmos-sdk/types/query"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 const (
-	QueryListClaim = "list-claim"
-	QueryClaim     = "claim"
+	QueryListClaim  = "list-claim"
+	QueryClaim      = "claim"
+	QueryParameters = "parameters"
 )
 
 type QueryAllClaimParams struct {
@@ -23,7 +25,7 @@ func NewQueryClaimRequest(hash tmbytes.HexBytes) *QueryClaimRequest {
 	return &QueryClaimRequest{ClaimHash: hash}
 }
 
-// // NewQueryAllClaimRequest creates a new instance of QueryAllClaimRequest.
-// func NewQueryAllClaimRequest(pageReq *query.PageRequest) *QueryAllClaimRequest {
-// 	return &QueryAllClaimRequest{Pagination: pageReq}
-// }
+// NewQueryAllClaimRequest creates a new instance of QueryAllClaimRequest.
+func NewQueryAllClaimRequest(pageReq *query.PageRequest) *QueryAllClaimRequest {
+	return &QueryAllClaimRequest{Pagination: pageReq}
+}

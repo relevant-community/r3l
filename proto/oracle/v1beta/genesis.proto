@@ -3,6 +3,20 @@ package r3l.oracle.v1beta1;
 
 option go_package = "github.com/relevant-community/r3l/x/oracle/types";
 
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+import "oracle/v1beta/params.proto";
+import "oracle/v1beta/vote.proto";
+
+
 // GenesisState defines the oracle module's genesis state.
 message GenesisState {
+    option (gogoproto.equal)           = false;
+    option (gogoproto.goproto_getters) = false;
+  
+    // params defines all the paramaters of related to deposit.
+    Params params = 1 [(gogoproto.nullable) = false];
+    repeated RoundVotes roundVotes = 2 [(gogoproto.nullable) = false];
+    repeated google.protobuf.Any claims  = 3;
 }

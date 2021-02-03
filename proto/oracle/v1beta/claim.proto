@@ -1,14 +1,25 @@
 syntax = "proto3";
 package r3l.oracle.v1beta1;
 
-option go_package = "github.com/relevant-community/r3l/x/oracle/types";
+option go_package            = "github.com/relevant-community/r3l/x/oracle/types";
+option (gogoproto.equal_all) = true;
 
-// import "gogoproto/gogo.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
 
-// message MsgClaim {
-//   string id = 1;
-//   bytes creator = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-//   int32 blockNumber = 3; 
-//   string hash = 4; 
-// }
+// MsgCreateClaim represents a message that supports submitting an arbitrary
+// oracle Claim.
+message MsgCreateClaim {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
 
+  string              submitter = 1;
+  google.protobuf.Any claim  = 2 [(cosmos_proto.accepts_interface) = "Claim"];
+}
+
+message TestClaim {
+  int64 blockHeight = 1;
+  string claimType = 2;
+  string content = 3;
+}

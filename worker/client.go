@@ -19,20 +19,18 @@ type process func(*cobra.Command, client.Context) error
 
 // Worker is a singleton type
 type Worker struct {
-	runProcess    process
-	blockInterval int64
+	runProcess process
 }
 
 var instance *Worker
 
 // Init intializes the singleton instance and worker parameters
-func Init(_runProcess process, _blockInterval int64) *Worker {
+func Init(_runProcess process) *Worker {
 	// We don't really need to do this, but this is a standard singleton pattern
 	// to protect from creation of multiple instances
 	once.Do(func() {
 		instance = &Worker{
-			runProcess:    _runProcess,
-			blockInterval: _blockInterval,
+			runProcess: _runProcess,
 		}
 	})
 	return instance
@@ -45,9 +43,7 @@ func (worker *Worker) StartWorkerCmd() *cobra.Command {
 		Short: "Starts offchain worker",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -87,22 +83,17 @@ func (worker *Worker) StartWorkerCmd() *cobra.Command {
 					blockHeight :=
 						block.Data.(tendermint.EventDataNewBlock).Block.Header.Height
 
-					// TODO use block interval
-					if blockHeight%worker.blockInterval != 0 {
-						return
-					}
-
-					// Important to update the bock height here
+						// Important to update the bock height here
 					// Data will be be fetch from clientCtx.Height - 1
 					clientCtx.Height = blockHeight
 
 					// run main worker proces here
 					err := worker.runProcess(cmd, clientCtx)
+
 					if err != nil {
 						fmt.Println("There was an error running the worker process")
 					}
 
-					fmt.Println("Finished worker process for block", blockHeight)
 				}()
 			}
 		},

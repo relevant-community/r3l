@@ -4,8 +4,6 @@ import (
 	// this line is used by starport scaffolding # 1
 	"github.com/relevant-community/r3l/x/r3l/types"
 
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -19,7 +17,6 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 			res []byte
 			err error
 		)
-		fmt.Println("request", req)
 
 		switch path[0] {
 		// this line is used by starport scaffolding # 2

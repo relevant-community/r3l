@@ -7,6 +7,7 @@ import "r3l/v1beta/rankSource.proto";
 import "r3l/v1beta/namespace.proto";
 import "r3l/v1beta/score.proto";
 import "r3l/v1beta/vote.proto";
+import "google/api/annotations.proto";
 
 
 option go_package = "github.com/relevant-community/r3l/x/r3l/types";
@@ -17,7 +18,9 @@ service Query {
 	rpc AllRankSource(QueryAllRankSourceRequest) returns (QueryAllRankSourceResponse);
 	rpc AllNamespace(QueryAllNamespaceRequest) returns (QueryAllNamespaceResponse);
 	rpc AllScore(QueryAllScoreRequest) returns (QueryAllScoreResponse);
-	rpc AllVote(QueryAllVoteRequest) returns (QueryAllVoteResponse);
+	rpc AllVote(QueryAllVoteRequest) returns (QueryAllVoteResponse) {
+		option (google.api.http).get = "/r3l/r3l/v1beta1/vote";
+	};
 }
 
 // this line is used by starport scaffolding # 3
@@ -42,7 +45,7 @@ message QueryAllScoreRequest {
 }
 
 message QueryAllScoreResponse {
-	repeated MsgScore score = 1;
+	repeated Score score = 1;
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 message QueryAllVoteRequest {

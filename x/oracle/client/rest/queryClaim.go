@@ -48,7 +48,7 @@ func queryClaimHandler(clientCtx client.Context) http.HandlerFunc {
 		claimHash := vars[RestParamClaimHash]
 
 		if strings.TrimSpace(claimHash) == "" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "evidence hash required but not specified")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "claim hash required but not specified")
 			return
 		}
 
@@ -59,7 +59,7 @@ func queryClaimHandler(clientCtx client.Context) http.HandlerFunc {
 
 		decodedHash, err := hex.DecodeString(claimHash)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "invalid evidence hash")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "invalid claim hash")
 			return
 		}
 

@@ -5,6 +5,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "google/api/annotations.proto";
+import "oracle/v1beta/params.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -12,14 +13,24 @@ option go_package = "github.com/relevant-community/r3l/x/oracle/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  // Params queries the parameters of slashing module
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/r3l/oracle/v1beta1/params";
+  }
     // this line is used by starport scaffolding # 2
-	rpc AllClaim(QueryAllClaimRequest) returns (QueryAllClaimResponse){
+	rpc AllClaim(QueryAllClaimRequest) returns (QueryAllClaimResponse);
+  // Claim queries claims based on claim hash.
+  rpc Claim(QueryClaimRequest) returns (QueryClaimResponse){
     option (google.api.http).get = "/r3l/oracle/v1beta1/claim/{claim_hash}";
   };
-  // Evidence queries evidence based on evidence hash.
-  rpc Claim(QueryClaimRequest) returns (QueryClaimResponse){
-    option (google.api.http).get = "/r3l/oracle/v1beta1/claim";
-  };
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryClaimRequest {
@@ -28,7 +39,7 @@ message QueryClaimRequest {
 
 // QueryClaimResponse is the response type for the Query/Claim RPC method.
 message QueryClaimResponse {
-  // claim returns the requested evidence.
+  // claim returns the requested claim.
   google.protobuf.Any claim = 1;
 }
 

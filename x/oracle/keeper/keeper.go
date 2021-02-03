@@ -16,15 +16,23 @@ type (
 		storeKey      sdk.StoreKey
 		memKey        sdk.StoreKey
 		StakingKeeper types.StakingKeeper
+		paramspace    types.ParamSubspace
 	}
 )
 
-func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, stakingKeeper types.StakingKeeper) *Keeper {
+func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, stakingKeeper types.StakingKeeper, paramspace types.ParamSubspace) *Keeper {
+
+	// set KeyTable if it has not already been set
+	if !paramspace.HasKeyTable() {
+		paramspace = paramspace.WithKeyTable(types.ParamKeyTable())
+	}
+
 	return &Keeper{
 		cdc:           cdc,
 		storeKey:      storeKey,
 		memKey:        memKey,
 		StakingKeeper: stakingKeeper,
+		paramspace:    paramspace,
 	}
 }
 

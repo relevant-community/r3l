@@ -19,6 +19,9 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 		)
 
 		switch path[0] {
+		case types.QueryParameters:
+			res, err = queryParams(ctx, k, legacyQuerierCdc)
+
 		case types.QueryListClaim:
 			res, err = queryAllClaims(ctx, req, k, legacyQuerierCdc)
 
@@ -29,4 +32,15 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 
 		return res, err
 	}
+}
+
+func queryParams(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	params := k.GetParams(ctx)
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
 }

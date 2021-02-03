@@ -20,10 +20,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleMsgCreateRankSource(ctx, k, msg)
 		case *types.MsgNamespace:
 			return handleMsgCreateNamespace(ctx, k, msg)
-		case *types.MsgScore:
-			return handleMsgCreateScore(ctx, k, msg)
-		case *types.MsgScores:
-			return handleMsgSetScores(ctx, k, msg)
 		case *types.MsgVote:
 			return handleMsgCreateVote(ctx, k, msg)
 		default:

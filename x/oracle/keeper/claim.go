@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/relevant-community/r3l/x/oracle/exported"
@@ -19,31 +18,36 @@ func (k Keeper) CreateClaim(ctx sdk.Context, claim exported.Claim) {
 
 // GetClaim retrieves Claim by hash if it exists. If no Claim exists for
 // the given hash, (nil, false) is returned.
-func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) (exported.Claim, bool) {
+func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) exported.Claim {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
 
 	bz := store.Get(hash)
 	if len(bz) == 0 {
-		return nil, false
+		return nil
 	}
 
-	return k.MustUnmarshalClaim(bz), true
+	return k.MustUnmarshalClaim(bz)
 }
 
 // GetAllClaim returns all claims
 func (k Keeper) GetAllClaim(ctx sdk.Context) (msgs []exported.Claim) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
+	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.ClaimKey))
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		claim := k.MustUnmarshalClaim(iterator.Value())
-		fmt.Println(claim)
 		msgs = append(msgs, claim)
 	}
 
 	return
+}
+
+// DeleteClaim deletes claim by hash
+func (k Keeper) DeleteClaim(ctx sdk.Context, hash tmbytes.HexBytes) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
+	store.Delete(hash)
 }
 
 // MustUnmarshalClaim attempts to decode and return an Claim object from
@@ -72,7 +76,7 @@ func (k Keeper) MustMarshalClaim(Claim exported.Claim) []byte {
 // the Marshaler interface, it is treated as a Proto-defined message and
 // serialized that way. Otherwise, it falls back on the internal Amino codec.
 func (k Keeper) MarshalClaim(claimI exported.Claim) ([]byte, error) {
-	return codec.MarshalAny(k.cdc, claimI)
+	return k.cdc.MarshalInterface(claimI)
 }
 
 // UnmarshalClaim returns a Claim interface from raw encoded Claim
@@ -80,7 +84,7 @@ func (k Keeper) MarshalClaim(claimI exported.Claim) ([]byte, error) {
 // failure.
 func (k Keeper) UnmarshalClaim(bz []byte) (exported.Claim, error) {
 	var claim exported.Claim
-	if err := codec.UnmarshalAny(k.cdc, &claim, bz); err != nil {
+	if err := k.cdc.UnmarshalInterface(bz, &claim); err != nil {
 		return nil, err
 	}
 

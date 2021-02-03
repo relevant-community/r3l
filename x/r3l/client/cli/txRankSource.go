@@ -17,8 +17,7 @@ func CmdCreateRankSource() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			argsAccount := string(args[0])
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

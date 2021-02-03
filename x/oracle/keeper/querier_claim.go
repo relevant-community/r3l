@@ -18,12 +18,12 @@ func queryClaim(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	evidence, ok := k.GetClaim(ctx, params.ClaimHash)
-	if !ok {
+	claim := k.GetClaim(ctx, params.ClaimHash)
+	if claim == nil {
 		return nil, sdkerrors.Wrap(types.ErrNoClaimExists, params.ClaimHash.String())
 	}
 
-	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, evidence)
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, claim)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
