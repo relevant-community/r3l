@@ -22,6 +22,7 @@ type Claim interface {
 	// depend on the content of the claim (developers will need to use the results of the voting
 	// to reconcile the various claims)
 	GetConcensusKey() string
+	ValidateBasic() error
 }
 
 // MsgCreateClaimI defines the specific interface a concrete message must

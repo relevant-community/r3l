@@ -10,6 +10,11 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
 
+// Message types for the evidence module
+const (
+	TypeMsgCreateClaim = "create_claim"
+)
+
 var (
 	_ sdk.Msg                       = &MsgCreateClaim{}
 	_ types.UnpackInterfacesMessage = MsgCreateClaim{}
@@ -36,7 +41,7 @@ func (msg *MsgCreateClaim) Route() string {
 
 // Type get msg type
 func (msg *MsgCreateClaim) Type() string {
-	return "CreateClaim"
+	return TypeMsgCreateClaim
 }
 
 // GetSigners get msg get signers
@@ -63,6 +68,9 @@ func (msg *MsgCreateClaim) ValidateBasic() error {
 	claim := msg.GetClaim()
 	if claim == nil {
 		return sdkerrors.Wrap(ErrInvalidClaim, "missing claim")
+	}
+	if err := claim.ValidateBasic(); err != nil {
+		return err
 	}
 
 	return nil

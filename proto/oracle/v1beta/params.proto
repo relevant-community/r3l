@@ -16,8 +16,9 @@ message Params {
   ];
 }
 
+// ClaimParams is the parameters set for each oracle claim type
 message ClaimParams {
-  int64 vote_period = 1 [(gogoproto.moretags) = "yaml:\"vote_period\", json:\"votePeriod\""];
+  int64 vote_period = 1 [(gogoproto.moretags) = "yaml:\"vote_period\""];
   string claim_type = 2  [(gogoproto.moretags) = "yaml:\"claim_type\""];
   bool prevote = 3  [(gogoproto.moretags) = "yaml:\"prevote\""];
 }

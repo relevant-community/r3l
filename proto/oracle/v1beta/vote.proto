@@ -4,6 +4,7 @@ package r3l.oracle.v1beta1;
 option go_package = "github.com/relevant-community/r3l/x/oracle/types";
 import "gogoproto/gogo.proto";
 
+// Vote is a vote for a given claim by a validator
 message Vote {
   uint64 roundId = 1; // use int in case we need to enforce sequential ordering
   bytes claimHash = 2 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
@@ -12,6 +13,7 @@ message Vote {
   bytes validator = 5 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
 }
 
+// RoundVotes is a set of all claim votes for a given round
 message RoundVotes {
   uint64 roundId = 1;
   string type = 2; // namespace so we can have multiple oracles

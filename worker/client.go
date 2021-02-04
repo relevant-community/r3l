@@ -36,7 +36,7 @@ func Init(_runProcess process) *Worker {
 	return instance
 }
 
-// StartWorkerCmd starts the sff-chain worker process
+// StartWorkerCmd starts the off-chain worker process
 func (worker *Worker) StartWorkerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-worker",

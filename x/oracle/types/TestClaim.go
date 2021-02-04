@@ -1,6 +1,8 @@
 package types
 
 import (
+	fmt "fmt"
+
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
@@ -15,6 +17,20 @@ func NewTestClaim(blockHeight int64, content string, claimType string) *TestClai
 }
 
 // Claim types needed for oracle
+
+// ValidateBasic performs basic validation of the claim
+func (c *TestClaim) ValidateBasic() error {
+	if len(c.ClaimType) == 0 {
+		return fmt.Errorf("claim type should not be empty")
+	}
+	if len(c.Content) == 0 {
+		return fmt.Errorf("claim content should not be empty")
+	}
+	if c.BlockHeight < 1 {
+		return fmt.Errorf("invalid claim height: %d", c.BlockHeight)
+	}
+	return nil
+}
 
 // Type return type of oracle Claim
 func (c *TestClaim) Type() string {

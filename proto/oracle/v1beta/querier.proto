@@ -33,6 +33,7 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryClaimRequest is the request type for the Query/Claim RPC method
 message QueryClaimRequest {
   bytes claim_hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
 }
@@ -44,10 +45,13 @@ message QueryClaimResponse {
 }
 
 // this line is used by starport scaffolding # 3
+
+// QueryAllClaimRequest is the request type for the Query/AllClaim RPC method
 message QueryAllClaimRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QueryAllClaimResponse is the response type for the Query/Claim RPC method.
 message QueryAllClaimResponse {
 	repeated google.protobuf.Any claim = 1;
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;

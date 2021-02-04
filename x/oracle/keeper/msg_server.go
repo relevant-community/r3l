@@ -1,14 +1,29 @@
-package oracle
+package keeper
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/relevant-community/r3l/x/oracle/keeper"
 	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
-func handleMsgCreateClaim(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCreateClaim) (*sdk.Result, error) {
+type msgServer struct {
+	Keeper
+}
+
+// NewMsgServerImpl returns an implementation of the oracle MsgServer interface
+// for the provided Keeper.
+func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+	return &msgServer{Keeper: keeper}
+}
+
+var _ types.MsgServer = msgServer{}
+
+func (k msgServer) CreateClaim(goCtx context.Context, msg *types.MsgCreateClaim) (*types.MsgCreateClaimResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
 	claim := msg.GetClaim()
 	validatorAddress := sdk.ValAddress(msg.GetSubmitter())
 
@@ -31,15 +46,14 @@ func handleMsgCreateClaim(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCreate
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeCreateClaim,
+			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.GetSubmitter().String()),
 			sdk.NewAttribute(types.AttributeKeyClaimHash, claim.Hash().String()),
 		),
 	)
 
-	return &sdk.Result{
-		Data:   claim.Hash(),
-		Events: ctx.EventManager().ABCIEvents(),
+	return &types.MsgCreateClaimResponse{
+		Hash: claim.Hash(),
 	}, nil
 }

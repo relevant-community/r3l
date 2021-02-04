@@ -8,6 +8,8 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
 
+var _ types.UnpackInterfacesMessage = GenesisState{}
+
 // DefaultIndex is the default capability global index
 const DefaultIndex uint64 = 1
 
@@ -19,10 +21,10 @@ func NewGenesisState(
 ) *GenesisState {
 
 	claims := make([]*types.Any, len(_claims))
-	for i, evi := range _claims {
-		msg, ok := evi.(proto.Message)
+	for i, claim := range _claims {
+		msg, ok := claim.(proto.Message)
 		if !ok {
-			panic(fmt.Errorf("cannot proto marshal %T", evi))
+			panic(fmt.Errorf("cannot proto marshal %T", claim))
 		}
 		any, err := types.NewAnyWithValue(msg)
 		if err != nil {
@@ -41,12 +43,38 @@ func NewGenesisState(
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		Params:     DefaultParams(),
+		Claims:     []*types.Any{},
+		RoundVotes: []RoundVotes{},
 	}
 }
 
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
+	for _, c := range gs.Claims {
+		claim, ok := c.GetCachedValue().(exported.Claim)
+		if !ok {
+			return fmt.Errorf("expected claim")
+		}
+		if err := claim.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+	if err := gs.Params.ValidateBasic(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (gs GenesisState) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+	for _, any := range gs.Claims {
+		var claim exported.Claim
+		err := unpacker.UnpackAny(any, &claim)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

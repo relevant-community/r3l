@@ -12,6 +12,10 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+	if err := genState.Validate(); err != nil {
+		panic(fmt.Sprintf("failed to validate %s genesis state: %s", types.ModuleName, err))
+	}
+
 	k.SetParams(ctx, genState.Params)
 
 	for _, roundVote := range genState.RoundVotes {

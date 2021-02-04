@@ -25,6 +25,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Vote is a vote for a given claim by a validator
 type Vote struct {
 	RoundId     uint64                                               `protobuf:"varint,1,opt,name=roundId,proto3" json:"roundId,omitempty"`
 	ClaimHash   github_com_tendermint_tendermint_libs_bytes.HexBytes `protobuf:"bytes,2,opt,name=claimHash,proto3,casttype=github.com/tendermint/tendermint/libs/bytes.HexBytes" json:"claimHash,omitempty"`
@@ -101,6 +102,7 @@ func (m *Vote) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
 	return nil
 }
 
+// RoundVotes is a set of all claim votes for a given round
 type RoundVotes struct {
 	RoundId uint64 `protobuf:"varint,1,opt,name=roundId,proto3" json:"roundId,omitempty"`
 	Type    string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`

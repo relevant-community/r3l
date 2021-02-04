@@ -114,6 +114,7 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryClaimRequest is the request type for the Query/Claim RPC method
 type QueryClaimRequest struct {
 	ClaimHash github_com_tendermint_tendermint_libs_bytes.HexBytes `protobuf:"bytes,1,opt,name=claim_hash,json=claimHash,proto3,casttype=github.com/tendermint/tendermint/libs/bytes.HexBytes" json:"claim_hash,omitempty"`
 }
@@ -204,7 +205,7 @@ func (m *QueryClaimResponse) GetClaim() *types.Any {
 	return nil
 }
 
-// this line is used by starport scaffolding # 3
+// QueryAllClaimRequest is the request type for the Query/AllClaim RPC method
 type QueryAllClaimRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -249,6 +250,7 @@ func (m *QueryAllClaimRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryAllClaimResponse is the response type for the Query/Claim RPC method.
 type QueryAllClaimResponse struct {
 	Claim      []*types.Any        `protobuf:"bytes,1,rep,name=claim,proto3" json:"claim,omitempty"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

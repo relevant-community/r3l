@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	// Keeper of the oracle store
 	Keeper struct {
 		cdc           codec.Marshaler
 		storeKey      sdk.StoreKey
@@ -20,6 +21,7 @@ type (
 	}
 )
 
+// NewKeeper instatiates the oracle keeper
 func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, stakingKeeper types.StakingKeeper, paramspace types.ParamSubspace) *Keeper {
 
 	// set KeyTable if it has not already been set
@@ -36,6 +38,7 @@ func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey, stakingKeeper
 	}
 }
 
+// Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }

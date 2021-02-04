@@ -77,7 +77,10 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 			suite.Require().NotNil(res, "expected non-nil result; tc #%d", i)
 
 			msg := tc.msg.(exported.MsgCreateClaimI)
-			suite.Require().Equal(msg.GetClaim().Hash().Bytes(), res.Data, "invalid hash; tc #%d", i)
+
+			var resultData types.MsgCreateClaimResponse
+			suite.app.AppCodec().UnmarshalBinaryBare(res.Data, &resultData)
+			suite.Require().Equal(msg.GetClaim().Hash().Bytes(), resultData.Hash, "invalid hash; tc #%d", i)
 		}
 	}
 }

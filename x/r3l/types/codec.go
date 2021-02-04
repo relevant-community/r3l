@@ -7,7 +7,7 @@ import (
 	exportedOracle "github.com/relevant-community/r3l/x/oracle/exported"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(MsgRankSource{}, "r3l/CreateRankSource", nil)
 	cdc.RegisterConcrete(MsgNamespace{}, "r3l/CreateNamespace", nil)

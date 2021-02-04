@@ -1,6 +1,8 @@
 package types
 
 import (
+	fmt "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -15,6 +17,17 @@ func NewScores(creator sdk.AccAddress, blockHeight int64, scores []Score) *Score
 }
 
 // Claim types needed for oracle
+
+// ValidateBasic performs basic validation of the claim
+func (msg *Scores) ValidateBasic() error {
+	if len(msg.Scores) == 0 {
+		return fmt.Errorf("claim content should not be empty")
+	}
+	if msg.BlockHeight < 1 {
+		return fmt.Errorf("invalid claim height: %d", msg.BlockHeight)
+	}
+	return nil
+}
 
 // Type return type of oracle Claim
 func (msg *Scores) Type() string {

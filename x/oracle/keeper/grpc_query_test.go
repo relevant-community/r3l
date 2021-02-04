@@ -11,6 +11,52 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
+func (suite *KeeperTestSuite) TestQueryParam() {
+	var (
+		req *types.QueryParamsRequest
+	)
+
+	testCases := []struct {
+		msg       string
+		malleate  func()
+		expPass   bool
+		posttests func(res *types.QueryParamsResponse)
+	}{
+		{
+			"success",
+			func() {
+				req = &types.QueryParamsRequest{}
+			},
+			true,
+			func(res *types.QueryParamsResponse) {
+				suite.Require().NotNil(res)
+				suite.Require().Equal(res.Params, types.DefaultParams())
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			suite.SetupTest()
+
+			tc.malleate()
+			ctx := sdk.WrapSDKContext(suite.ctx)
+
+			res, err := suite.queryClient.Params(ctx, req)
+
+			if tc.expPass {
+				suite.Require().NoError(err)
+				suite.Require().NotNil(res)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Nil(res)
+			}
+
+			tc.posttests(res)
+		})
+	}
+}
+
 func (suite *KeeperTestSuite) TestQueryClaim() {
 	var (
 		req    *types.QueryClaimRequest
@@ -91,7 +137,7 @@ func (suite *KeeperTestSuite) TestQueryAllEvidence() {
 		posttests func(res *types.QueryAllClaimResponse)
 	}{
 		{
-			"success without evidence",
+			"success without claim",
 			func() {
 				req = &types.QueryAllClaimRequest{}
 			},
