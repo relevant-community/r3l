@@ -2,33 +2,44 @@
 
 **r3l** is a blockchain application built using Cosmos SDK and Tendermint and generated with [Starport](https://github.com/tendermint/starport).
 
-This is a very early WIP. At the moment the app demonstrates the usage of the [Relevant Reputation Protocol](https://github.com/relevant-community/reputation) via a naive implementation of off-chain workers.
+This app demonstrates the usage of the [Relevant Reputation Protocol](https://github.com/relevant-community/reputation) and Cosmos off-chain workers.
 
 How it works:
 
 - The app is pre-initialzed with some votes (pagerank links) and personalization node in the genesis state
-- We query the current votes and other params in the r3l module's BeginBlock method
-- We then begin a go routine that computes the reputation scores.
-- Once results are returned (in some future block) we issue a TX to write them on-chain.
+- Once the offchain worker is started, it queries the votes from the r3l chain, computes reputation scores, and submits the results as an 'oracle' claim
+- The Oracle module stores the all claims and associated validator votes for the claims
+- The every EndBlock, the r3l module queries Oracle for the pending rounds, tallies the votes and commits the results on-chain if the concensus threshold is reached
 
-TODO: all of the obove should happen in a separate client process.
-TODO: implement oracle reporting - results need to reach consensus before being written onchain
+Oracle TODOs:
+ - [] Add option to delegate oracle worker (so validators can use a different account)
+ - [] Expose querying pendingVotes and RoundVotes via cli and rpc endpoints (currently only used internally)
+ - [] Implement a commit-reveal pattern to prevent free-rider oracle validators
 
-## Test the app
+## Run the r3l chain and the off-chain worker
 
 You will need to make sure you have cloned and built the Cosmos Relayer: https://github.com/cosmos/relayer
 
 ```
-starport serve -v // so we can see when the TXs are issued
+starport serve
 ```
 
-in a separate window, run
+in a new terminal window, run
+
+```
+r3ld start-worker --from user1 --chain-id r3l --keyring-backend test
+```
+
+to check results, in a new terminal window, run
 
 ```
 r3ld query r3l list-score
 ```
 
 and you should see some reputation scores
+
+----
+starport docs:
 
 ## Get started
 
