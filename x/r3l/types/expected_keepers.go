@@ -11,6 +11,7 @@ import (
 type (
 	// OracleKeeper interface
 	OracleKeeper interface {
+		DeleteVotesForRound(ctx sdk.Context, claimType string, roundID uint64)
 		DeletePendingRound(ctx sdk.Context, claimType string, roundID uint64)
 		GetPendingRounds(ctx sdk.Context, roundType string) (rounds []uint64)
 		TallyVotes(ctx sdk.Context, claimType string, roundID uint64) *oracletypes.RoundResult

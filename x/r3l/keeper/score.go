@@ -52,6 +52,8 @@ func (k Keeper) UpdateScores(ctx sdk.Context) {
 		}
 		// TODO delete the earlier rounds also
 		k.oracleKeeper.DeletePendingRound(ctx, claimType, roundID)
+		k.oracleKeeper.DeleteVotesForRound(ctx, claimType, roundID)
+
 		return
 	}
 }
