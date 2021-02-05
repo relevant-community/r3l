@@ -27,7 +27,7 @@ func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
 		switch param.ClaimType {
 		case "ScoreClaim":
 			// use VotePeriod to determin frequency of submitting claims
-			if clientCtx.Height%param.VotePeriod != 0 {
+			if clientCtx.Height%param.VotePeriod == 0 {
 				// run process for the given claimType
 				err = ComputeReputation(cmd, clientCtx)
 				if err != nil {

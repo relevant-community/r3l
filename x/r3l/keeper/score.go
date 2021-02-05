@@ -6,10 +6,10 @@ import (
 	"github.com/relevant-community/r3l/x/r3l/types"
 )
 
-func (k Keeper) SetScores(ctx sdk.Context, scoresMsg *types.Scores) {
+func (k Keeper) SetScores(ctx sdk.Context, scores *types.Scores) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ScoreKey))
-	for _, score := range scoresMsg.Scores {
-		score.BlockHeight = scoresMsg.BlockHeight
+	for _, score := range scores.Scores {
+		score.BlockHeight = scores.BlockHeight
 		b := k.cdc.MustMarshalBinaryBare(&score)
 		store.Set(types.KeyPrefix(types.ScoreKey+score.Id), b)
 	}
