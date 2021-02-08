@@ -97,6 +97,5 @@ func (k Keeper) AllClaim(c context.Context, req *types.QueryAllClaimRequest) (*t
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-
 	return &types.QueryAllClaimResponse{Claim: claims, Pagination: pageRes}, nil
 }

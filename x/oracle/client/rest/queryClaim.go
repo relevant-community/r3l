@@ -14,6 +14,8 @@ import (
 
 func listClaimHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("REQ", r)
+
 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
 		if rest.CheckBadRequestError(w, err) {
 			return
@@ -77,6 +79,7 @@ func queryClaimHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		clientCtx = clientCtx.WithHeight(height)
+		fmt.Println("RES", res)
 		rest.PostProcessResponse(w, clientCtx, res)
 	}
 }

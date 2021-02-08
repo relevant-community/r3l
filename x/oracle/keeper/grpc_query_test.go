@@ -125,7 +125,7 @@ func (suite *KeeperTestSuite) TestQueryClaim() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestQueryAllEvidence() {
+func (suite *KeeperTestSuite) TestQueryAllClaims() {
 	var (
 		req *types.QueryAllClaimRequest
 	)

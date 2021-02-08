@@ -5,13 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/relevant-community/r3l/app/params"
 	oraclekeeper "github.com/relevant-community/r3l/x/oracle/keeper"
 	oracletypes "github.com/relevant-community/r3l/x/oracle/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -24,15 +35,56 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
-	// Evidence: &tmproto.EvidenceParams{
-	// 	MaxAgeNumBlocks: 302400,
-	// 	MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
-	// },
+	Evidence: &tmproto.EvidenceParams{
+		MaxAgeNumBlocks: 302400,
+		MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
+	},
 	Validator: &tmproto.ValidatorParams{
 		PubKeyTypes: []string{
 			tmtypes.ABCIPubKeyTypeEd25519,
 		},
 	},
+}
+
+// NewAppConstructor returns a new simulation AppConstructor (used in cli tests)
+func NewAppConstructor(encodingCfg params.EncodingConfig) network.AppConstructor {
+	return func(val network.Validator) servertypes.Application {
+		return New(
+			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
+			encodingCfg,
+			simapp.EmptyAppOptions{},
+			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
+			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+		)
+	}
+}
+
+// DefaultConfig returns a sane default configuration suitable for nearly all
+// testing requirements.
+func DefaultConfig() network.Config {
+	encCfg := MakeEncodingConfig()
+
+	return network.Config{
+		Codec:             encCfg.Marshaler,
+		TxConfig:          encCfg.TxConfig,
+		LegacyAmino:       encCfg.Amino,
+		InterfaceRegistry: encCfg.InterfaceRegistry,
+		AccountRetriever:  authtypes.AccountRetriever{},
+		AppConstructor:    NewAppConstructor(encCfg),
+		GenesisState:      ModuleBasics.DefaultGenesis(encCfg.Marshaler),
+		TimeoutCommit:     2 * time.Second,
+		ChainID:           "chain-" + tmrand.NewRand().Str(6),
+		NumValidators:     4,
+		BondDenom:         sdk.DefaultBondDenom,
+		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
+		AccountTokens:     sdk.TokensFromConsensusPower(1000),
+		StakingTokens:     sdk.TokensFromConsensusPower(500),
+		BondedTokens:      sdk.TokensFromConsensusPower(100),
+		PruningStrategy:   storetypes.PruningOptionNothing,
+		CleanupDir:        true,
+		SigningAlgo:       string(hd.Secp256k1Type),
+		KeyringOptions:    []keyring.Option{},
+	}
 }
 
 // Setup initializes a new TestApp. A Nop logger is set in TestApp.
@@ -47,7 +99,7 @@ func Setup(isCheckTx bool) *App {
 			panic(err)
 		}
 
-		// 		// Initialize the chain
+		// Initialize the chain
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
@@ -100,7 +152,7 @@ func SaveAccount(app *App, ctx sdk.Context, addr sdk.AccAddress, initCoins sdk.C
 	}
 }
 
-// AddTestAddrs constructs and returns accNum amount of accounts with an
+// AddTestAddrsIncremental constructs and returns accNum amount of accounts with an
 // initial balance of accAmt in random order
 func AddTestAddrsIncremental(app *App, ctx sdk.Context, accNum int, accAmt sdk.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, createIncrementalAccounts)
@@ -154,6 +206,7 @@ func createIncrementalAccounts(accNum int) []sdk.AccAddress {
 	return addresses
 }
 
+// TestAddr generates test address
 func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 	res, err := sdk.AccAddressFromHex(addr)
 	if err != nil {
@@ -177,6 +230,7 @@ func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 
 // TYPES
 
+// GenerateAccountStrategy type
 type GenerateAccountStrategy func(int) []sdk.AccAddress
 
 // EmptyAppOptions is a stub implementing AppOptions
