@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "google/api/annotations.proto";
 import "oracle/v1beta/params.proto";
+import "cosmos_proto/cosmos.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -43,7 +44,7 @@ message QueryClaimRequest {
 // QueryClaimResponse is the response type for the Query/Claim RPC method.
 message QueryClaimResponse {
   // claim returns the requested claim.
-  google.protobuf.Any claim = 1;
+  google.protobuf.Any claim = 1 [(cosmos_proto.accepts_interface) = "Claim"];
 }
 
 // this line is used by starport scaffolding # 3

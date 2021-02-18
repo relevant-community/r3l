@@ -88,7 +88,9 @@ func StartWorkerCmd() *cobra.Command {
 			// We don't need a prompt
 			clientCtx.SkipConfirm = true
 			// TODO is json better for automated logging?
-			clientCtx.OutputFormat = "text"
+			if clientCtx.OutputFormat == "" {
+				clientCtx.OutputFormat = "text"
+			}
 
 			// Loop on received messages.
 			var stop bool

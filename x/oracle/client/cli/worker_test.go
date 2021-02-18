@@ -31,7 +31,6 @@ func Run(cmd *cobra.Command, clientCtx client.Context) error {
 
 	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), submitClaimMsg)
 
-	// TODO retry if the TX fails
 	if err != nil {
 		fmt.Println("TX ERROR", err)
 		return err
@@ -49,6 +48,7 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 		expectErr    bool
 		respType     proto.Message
 		expectedCode uint32
+		// expectedRes
 	}{
 		"run-worker": {
 			[]string{
@@ -69,6 +69,7 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 
 		s.Run(name, func() {
 			clientCtx := val.ClientCtx.WithNodeURI(val.RPCAddress)
+			clientCtx.OutputFormat = "json"
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cli.StartWorkerCmd(), tc.args)
 
@@ -77,10 +78,9 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 			} else {
 				s.Require().NoError(err)
 
-				fmt.Println(out)
-				// s.Require().NoError(val.ClientCtx.LegacyAmino.Amino.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-				// txResp := tc.respType.(*sdk.TxResponse)
-				// s.Require().Equal(tc.expectedCode, txResp.Code)
+				s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				txResp := tc.respType.(*sdk.TxResponse)
+				s.Require().Equal(tc.expectedCode, txResp.Code)
 			}
 
 			// wait for the worker tx to execute and confirm state transition
@@ -89,18 +89,12 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 
 			testClaim := types.NewTestClaim(1, "test", "test")
 			res, err := clitestutil.ExecTestCLICmd(clientCtx, cli.CmdClaim(), []string{testClaim.Hash().String()})
-			s.Require().NoError(err)
 
-			// var resClaim proto.Message
-			// resClaim = &types.TestClaim{}
-			// err = val.ClientCtx.JSONMarshaler.UnmarshalJSON(res.Bytes(), resClaim)
-			// if err != nil {
-			// 	fmt.Println(err)
-			fmt.Println(res.String())
-			// }
-			// fmt.Println(resClaim)
-			// resTestClaim := resClaim.(*types.TestClaim)
-			// s.Require().Contains(resTestClaim.String(), testClaim.String())
+			resType := &types.QueryClaimResponse{}
+			s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(res.Bytes(), resType))
+			resClaim := &types.TestClaim{}
+			resClaim.Unmarshal(resType.Claim.Value)
+			s.Require().Contains(resClaim.String(), testClaim.String())
 		})
 	}
 }
