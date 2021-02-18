@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/relevant-community/r3l/app/params"
+	"github.com/relevant-community/r3l/cmd/r3ld/cmd/worker"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -33,8 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/relevant-community/r3l/app"
-	r3lworker "github.com/relevant-community/r3l/cmd/r3ld/cmd/worker"
-	"github.com/relevant-community/r3l/worker"
+	oraclecli "github.com/relevant-community/r3l/x/oracle/client/cli"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -101,12 +101,11 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	a := appCreator{encodingConfig}
 	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
-	workerInstance := worker.Init(r3lworker.RunWorkerProcess)
+	// Initialize oracle worker process
+	oraclecli.InitializeWorker(worker.Run)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
-		workerInstance.StartWorkerCmd(),
-
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),

@@ -1,4 +1,4 @@
-package worker
+package cli
 
 import (
 	"context"
@@ -9,23 +9,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	rpcClient "github.com/tendermint/tendermint/rpc/client/http"
+	"github.com/tendermint/tendermint/rpc/client/http"
 	tendermint "github.com/tendermint/tendermint/types"
 )
 
 var once sync.Once
 
-type process func(*cobra.Command, client.Context) error
+// WorkerProcess is the custom code that the worker must run
+type WorkerProcess func(*cobra.Command, client.Context) error
 
 // Worker is a singleton type
 type Worker struct {
-	runProcess process
+	runProcess WorkerProcess
 }
 
 var instance *Worker
 
-// Init intializes the singleton instance and worker parameters
-func Init(_runProcess process) *Worker {
+// InitializeWorker intializes the singleton instance and sets the worker process
+// This method should be called from the app's cmd/root.go file
+func InitializeWorker(_runProcess WorkerProcess) *Worker {
 	// We don't really need to do this, but this is a standard singleton pattern
 	// to protect from creation of multiple instances
 	once.Do(func() {
@@ -37,37 +39,50 @@ func Init(_runProcess process) *Worker {
 }
 
 // StartWorkerCmd starts the off-chain worker process
-func (worker *Worker) StartWorkerCmd() *cobra.Command {
+func StartWorkerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-worker",
 		Short: "Starts offchain worker",
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if instance == nil {
+				return fmt.Errorf("Worker process has not been intialized, nothing to run")
+			}
+
+			var test bool
+			if len(args) > 0 {
+				test = true
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			httpClient, _ := rpcClient.New(clientCtx.NodeURI, "/websocket")
-			err = httpClient.Start()
+			if clientCtx.NodeURI == "" {
+				return fmt.Errorf("Missing Tendermint Node URI")
+			}
+			rpcClient, _ := http.New(clientCtx.NodeURI, "/websocket")
+			err = rpcClient.Start()
+
 			// Retry if we don't have a connection
 			for err != nil {
 				fmt.Println("Could not connect to Tendermint node, retrying in 1 second.")
 				time.Sleep(1 * time.Second)
-				err = httpClient.Start()
+				err = rpcClient.Start()
 			}
 
-			defer httpClient.Stop()
+			defer rpcClient.Stop()
 			ctx := context.Background()
 
 			query := "tm.event = 'NewBlock'"
 
-			blockEvent, err := httpClient.Subscribe(ctx, "test-client", query)
+			blockEvent, err := rpcClient.Subscribe(ctx, "test-client", query)
 			// Retry if we don't have a connection
 			for err != nil {
 				fmt.Println("Could not subscribe to Tendermint block event, retrying in 1 second.")
 				time.Sleep(1 * time.Second)
-				blockEvent, err = httpClient.Subscribe(ctx, "test-client", query)
+				blockEvent, err = rpcClient.Subscribe(ctx, "test-client", query)
 			}
 
 			// We don't need a prompt
@@ -76,26 +91,29 @@ func (worker *Worker) StartWorkerCmd() *cobra.Command {
 			clientCtx.OutputFormat = "text"
 
 			// Loop on received messages.
-			for {
-				time.Sleep(100 * time.Millisecond)
+			var stop bool
+
+			for stop == false {
 				go func() {
 					block := <-blockEvent
 					blockHeight :=
 						block.Data.(tendermint.EventDataNewBlock).Block.Header.Height
 
-						// Important to update the bock height here
+					// Important to update the bock height here
 					// Data will be be fetch from clientCtx.Height - 1
 					clientCtx.Height = blockHeight
 
 					// run main worker proces here
-					err := worker.runProcess(cmd, clientCtx)
+					err := instance.runProcess(cmd, clientCtx)
 
 					if err != nil {
-						fmt.Println("There was an error running the worker process")
+						fmt.Println("There was an error running the worker process", err)
 					}
-
+					stop = test
 				}()
+				time.Sleep(100 * time.Millisecond)
 			}
+			return nil
 		},
 	}
 

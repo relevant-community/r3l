@@ -1,4 +1,4 @@
-package r3lworker
+package worker
 
 import (
 	"context"

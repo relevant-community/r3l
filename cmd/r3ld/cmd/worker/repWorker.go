@@ -1,4 +1,4 @@
-package r3lworker
+package worker
 
 import (
 	"fmt"
@@ -70,7 +70,6 @@ func computeRank(votes []*types.MsgVote, scores []*types.Score, rankSources []*t
 			NRank: toFixed(nRank),
 		}
 		updatedScores = append(updatedScores, score)
-		// fmt.Println(id, pRank, nRank)
 	}
 
 	graph.Rank(callback)

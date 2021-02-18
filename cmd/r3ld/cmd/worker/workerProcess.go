@@ -1,4 +1,4 @@
-package r3lworker
+package worker
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// RunWorkerProcess is our custom worker code
-func RunWorkerProcess(cmd *cobra.Command, clientCtx client.Context) error {
+// Run is our custom worker code
+func Run(cmd *cobra.Command, clientCtx client.Context) error {
 	queryClient := types.NewQueryClient(clientCtx)
 
 	params := &types.QueryParamsRequest{}
