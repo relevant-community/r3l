@@ -17,8 +17,9 @@ import (
 type GenesisTestSuite struct {
 	suite.Suite
 
-	ctx    sdk.Context
-	keeper keeper.Keeper
+	ctx        sdk.Context
+	k          keeper.Keeper
+	validators []sdk.ValAddress
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
@@ -27,16 +28,29 @@ func (suite *GenesisTestSuite) SetupTest() {
 	app, _ := testoracle.CreateTestInput()
 
 	suite.ctx = app.BaseApp.NewContext(checkTx, tmproto.Header{Height: 1})
-	suite.keeper = app.OracleKeeper
+	suite.k = app.OracleKeeper
+
+	powers := []int64{10, 10, 10}
+	_, validators, _ := testoracle.CreateValidators(suite.T(), suite.ctx, app, powers)
+	suite.validators = validators
 }
 
-func (suite *GenesisTestSuite) TestInitGenesis() {
+func (suite *GenesisTestSuite) TestGenesis() {
 	var (
 		genesisState *types.GenesisState
 		testClaim    []exported.Claim
 	)
-	roundVotes := []types.Round{}
+
+	claimType := "test"
+	round := []types.Round{}
 	params := types.DefaultParams()
+	params.ClaimParams = []types.ClaimParams{
+		{
+			ClaimType: claimType,
+		},
+	}
+
+	numClaims := 10
 
 	testCases := []struct {
 		msg       string
@@ -47,39 +61,47 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 		{
 			"valid",
 			func() {
-				testClaim = make([]exported.Claim, 100)
-				for i := 0; i < 100; i++ {
+
+				testClaim = make([]exported.Claim, numClaims)
+				for i := 0; i < numClaims; i++ {
 					testClaim[i] = &types.TestClaim{
 						BlockHeight: int64(i + 1),
 						Content:     "test",
-						ClaimType:   "test",
+						ClaimType:   claimType,
 					}
 				}
-				genesisState = types.NewGenesisState(params, roundVotes, testClaim)
+				pending := map[string][]uint64{
+					"test": {98, 99},
+				}
+				genesisState = types.NewGenesisState(params, round, testClaim, pending)
 			},
 			true,
 			func() {
 				for _, c := range testClaim {
-					res := suite.keeper.GetClaim(suite.ctx, c.Hash())
+					res := suite.k.GetClaim(suite.ctx, c.Hash())
 					suite.NotNil(res)
 				}
+				p := suite.k.GetPendingRounds(suite.ctx, claimType)
+				suite.Equal(p[0], uint64(98))
+				suite.Equal(p[1], uint64(99))
 			},
 		},
 		{
 			"invalid",
 			func() {
-				testClaim = make([]exported.Claim, 100)
-				for i := 0; i < 100; i++ {
+				testClaim = make([]exported.Claim, numClaims)
+				for i := 0; i < numClaims; i++ {
 					testClaim[i] = &types.TestClaim{
-						// Content:   "test",
+						Content:   "test",
 						ClaimType: "test",
 					}
 				}
-				genesisState = types.NewGenesisState(params, roundVotes, testClaim)
+				pending := map[string][]uint64{}
+				genesisState = types.NewGenesisState(params, round, testClaim, pending)
 			},
 			false,
 			func() {
-				suite.Empty(suite.keeper.GetAllClaims(suite.ctx))
+				suite.Empty(suite.k.GetAllClaims(suite.ctx))
 			},
 		},
 	}
@@ -92,11 +114,11 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 
 			if tc.expPass {
 				suite.NotPanics(func() {
-					oracle.InitGenesis(suite.ctx, suite.keeper, *genesisState)
+					oracle.InitGenesis(suite.ctx, suite.k, *genesisState)
 				})
 			} else {
 				suite.Panics(func() {
-					oracle.InitGenesis(suite.ctx, suite.keeper, *genesisState)
+					oracle.InitGenesis(suite.ctx, suite.k, *genesisState)
 				})
 			}
 
@@ -105,7 +127,9 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 	}
 }
 
-func (suite *GenesisTestSuite) TestExportGenesis() {
+func (suite *GenesisTestSuite) TestImportExportGenesis() {
+	claimType := "test"
+	roundID := int64(1)
 
 	testCases := []struct {
 		msg       string
@@ -116,11 +140,11 @@ func (suite *GenesisTestSuite) TestExportGenesis() {
 		{
 			"success",
 			func() {
-				suite.keeper.CreateClaim(suite.ctx, &types.TestClaim{
-					BlockHeight: 1,
+				suite.k.CastVote(suite.ctx, &types.TestClaim{
+					BlockHeight: roundID,
 					Content:     "test",
-					ClaimType:   "test",
-				})
+					ClaimType:   claimType,
+				}, suite.validators[0])
 			},
 			true,
 			func() {},
@@ -135,11 +159,19 @@ func (suite *GenesisTestSuite) TestExportGenesis() {
 
 			if tc.expPass {
 				suite.NotPanics(func() {
-					oracle.ExportGenesis(suite.ctx, suite.keeper)
+					genesisState := oracle.ExportGenesis(suite.ctx, suite.k)
+
+					// Test Import
+					// clear store
+					suite.k.DeleteVotesForRound(suite.ctx, claimType, uint64(roundID))
+					oracle.InitGenesis(suite.ctx, suite.k, *genesisState)
+					newGenesis := oracle.ExportGenesis(suite.ctx, suite.k)
+
+					suite.Require().Equal(genesisState, newGenesis)
 				})
 			} else {
 				suite.Panics(func() {
-					oracle.ExportGenesis(suite.ctx, suite.keeper)
+					oracle.ExportGenesis(suite.ctx, suite.k)
 				})
 			}
 

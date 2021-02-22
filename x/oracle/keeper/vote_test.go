@@ -25,10 +25,10 @@ func (suite *KeeperTestSuite) TestCastVote() {
 	suite.NotNil(roundID)
 	suite.Equal(roundID, claim.GetRoundID())
 
-	roundVotes := suite.k.GetRound(ctx, claimType, roundID)
-	suite.NotNil(roundVotes)
+	round := suite.k.GetRound(ctx, claimType, roundID)
+	suite.NotNil(round)
 
-	vote := roundVotes.Votes[len(roundVotes.Votes)-1]
+	vote := round.Votes[len(round.Votes)-1]
 	suite.NotNil(vote)
 
 	suite.Equal(vote.Validator, val0)
@@ -39,9 +39,9 @@ func (suite *KeeperTestSuite) TestCastVote() {
 
 	// Add second vote
 	suite.k.CastVote(ctx, claim, val1)
-	roundVotes = suite.k.GetRound(ctx, claimType, roundID)
-	suite.NotNil(roundVotes)
-	suite.Equal(len(roundVotes.Votes), 2)
+	round = suite.k.GetRound(ctx, claimType, roundID)
+	suite.NotNil(round)
+	suite.Equal(len(round.Votes), 2)
 
 	// Test cleanup
 
@@ -53,8 +53,8 @@ func (suite *KeeperTestSuite) TestCastVote() {
 
 	// Remove votes + claims
 	suite.k.DeleteVotesForRound(ctx, claimType, roundID)
-	roundVotes = suite.k.GetRound(ctx, claimType, roundID)
-	suite.Nil(roundVotes)
+	round = suite.k.GetRound(ctx, claimType, roundID)
+	suite.Nil(round)
 
 	savedClaim = suite.k.GetClaim(ctx, claim.Hash())
 	suite.Nil(savedClaim)
@@ -100,20 +100,20 @@ func (suite *KeeperTestSuite) TestIterateVotes() {
 }
 
 func (suite *KeeperTestSuite) populateVotes(ctx sdk.Context, num int) []types.Round {
-	roundVotes := make([]types.Round, num)
+	rounds := make([]types.Round, num)
 
 	for i := 0; i < num; i++ {
 		roundID := uint64(i)
 
 		claim := types.NewTestClaim(int64(roundID), "test", claimType)
 		vote := types.NewVote(roundID, claim, suite.validators[0], claimType)
-		roundVote := types.Round{
+		round := types.Round{
 			Votes:   []types.Vote{*vote},
 			RoundId: roundID,
 			Type:    claimType,
 		}
-		roundVotes[i] = roundVote
-		suite.k.CreateRound(ctx, roundVote)
+		rounds[i] = round
+		suite.k.CreateRound(ctx, round)
 	}
-	return roundVotes
+	return rounds
 }

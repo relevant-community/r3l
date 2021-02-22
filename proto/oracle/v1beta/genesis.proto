@@ -10,6 +10,9 @@ import "oracle/v1beta/params.proto";
 import "oracle/v1beta/vote.proto";
 
 
+
+ 
+
 // GenesisState defines the oracle module's genesis state.
 message GenesisState {
     option (gogoproto.equal)           = false;
@@ -19,5 +22,8 @@ message GenesisState {
     Params params = 1 [(gogoproto.nullable) = false];
     repeated google.protobuf.Any claims  =2;
     repeated Round rounds = 3 [(gogoproto.nullable) = false];
-    repeated uint64 pending = 4 [(gogoproto.nullable) = false];
+    message ListOfUint {
+        repeated uint64 pending = 1 [(gogoproto.nullable) = false];
+    }
+    map<string, ListOfUint> pending = 4 [(gogoproto.nullable) = false];
 }

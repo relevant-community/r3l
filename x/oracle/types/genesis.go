@@ -18,6 +18,7 @@ func NewGenesisState(
 	params Params,
 	rounds []Round,
 	_claims []exported.Claim,
+	pending map[string]([]uint64),
 ) *GenesisState {
 
 	claims := make([]*types.Any, len(_claims))
@@ -33,19 +34,26 @@ func NewGenesisState(
 		claims[i] = any
 	}
 
+	genPending := map[string]GenesisState_ListOfUint{}
+	for i, p := range pending {
+		genPending[i] = GenesisState_ListOfUint{p}
+	}
+
 	return &GenesisState{
-		Params: params,
-		Rounds: rounds,
-		Claims: claims,
+		Params:  params,
+		Rounds:  rounds,
+		Claims:  claims,
+		Pending: genPending,
 	}
 }
 
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
-		Claims: []*types.Any{},
-		Rounds: []Round{},
+		Params:  DefaultParams(),
+		Claims:  []*types.Any{},
+		Rounds:  []Round{},
+		Pending: map[string]GenesisState_ListOfUint{},
 	}
 }
 

@@ -16,6 +16,11 @@ var (
 // Default parameter values
 var (
 	DefaultVoteThreshold = sdk.NewDecWithPrec(50, 2) // 50%
+	DefaultClaimParams   = []ClaimParams{
+		{
+			ClaimType: "test",
+		},
+	}
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -29,6 +34,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 	return Params{
 		VoteThreshold: DefaultVoteThreshold,
+		ClaimParams:   DefaultClaimParams,
 	}
 }
 

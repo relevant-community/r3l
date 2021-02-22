@@ -18,8 +18,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	k.SetParams(ctx, genState.Params)
 
-	for _, roundVote := range genState.Rounds {
-		k.CreateRound(ctx, roundVote)
+	for _, round := range genState.Rounds {
+		k.CreateRound(ctx, round)
 	}
 
 	for _, c := range genState.Claims {
@@ -34,12 +34,18 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.CreateClaim(ctx, claim)
 	}
 
+	for claimType, pendingRounds := range genState.Pending {
+		for _, roundID := range pendingRounds.Pending {
+			k.AddPendingRound(ctx, claimType, roundID)
+		}
+	}
 }
 
 // ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	params := k.GetParams(ctx)
-	roundVotes := k.GetAllRounds(ctx)
+	rounds := k.GetAllRounds(ctx)
 	claims := k.GetAllClaims(ctx)
-	return types.NewGenesisState(params, roundVotes, claims)
+	pending := k.GetAllPendingRounds(ctx)
+	return types.NewGenesisState(params, rounds, claims, pending)
 }

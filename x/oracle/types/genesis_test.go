@@ -26,8 +26,9 @@ func TestDefaultGenesisState(t *testing.T) {
 
 func TestNewGenesisState(t *testing.T) {
 	var (
-		claims     []exported.Claim
-		roundVotes []types.Round
+		claims  []exported.Claim
+		rounds  []types.Round
+		pending map[string]([]uint64)
 	)
 
 	testCases := []struct {
@@ -39,7 +40,10 @@ func TestNewGenesisState(t *testing.T) {
 			"can proto marshal",
 			func() {
 				claims = []exported.Claim{&types.TestClaim{}}
-				roundVotes = []types.Round{}
+				rounds = []types.Round{}
+				pending = map[string][]uint64{
+					"test": {1},
+				}
 			},
 			true,
 		},
@@ -51,11 +55,11 @@ func TestNewGenesisState(t *testing.T) {
 
 			if tc.expPass {
 				require.NotPanics(t, func() {
-					types.NewGenesisState(types.DefaultParams(), roundVotes, claims)
+					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending)
 				})
 			} else {
 				require.Panics(t, func() {
-					types.NewGenesisState(types.DefaultParams(), roundVotes, claims)
+					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending)
 				})
 			}
 		})
@@ -66,8 +70,9 @@ func TestGenesisStateValidate(t *testing.T) {
 	var (
 		genesisState *types.GenesisState
 		testClaim    []exported.Claim
+		pending      map[string]([]uint64)
 	)
-	roundVotes := []types.Round{}
+	round := []types.Round{}
 	params := types.DefaultParams()
 
 	testCases := []struct {
@@ -86,7 +91,7 @@ func TestGenesisStateValidate(t *testing.T) {
 						ClaimType:   "test",
 					}
 				}
-				genesisState = types.NewGenesisState(params, roundVotes, testClaim)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending)
 			},
 			true,
 		},
@@ -101,12 +106,12 @@ func TestGenesisStateValidate(t *testing.T) {
 						ClaimType:   "test",
 					}
 				}
-				genesisState = types.NewGenesisState(params, roundVotes, testClaim)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending)
 			},
 			false,
 		},
 		{
-			"expected evidence",
+			"expected claim",
 			func() {
 				genesisState = &types.GenesisState{
 					Claims: []*codectypes.Any{{}},

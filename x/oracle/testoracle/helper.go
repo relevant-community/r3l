@@ -10,7 +10,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/teststaking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	oracleapp "github.com/relevant-community/r3l/app"
+	"github.com/relevant-community/r3l/x/oracle/keeper"
+	"github.com/relevant-community/r3l/x/oracle/types"
 )
+
+// AddClaimType Registers claimType as an orcale params
+func AddClaimType(ctx sdk.Context, k keeper.Keeper, claimType string) {
+	params := types.DefaultParams()
+	params.ClaimParams = []types.ClaimParams{
+		{
+			ClaimType: claimType,
+		},
+	}
+	k.SetParams(ctx, params)
+}
 
 // CreateTestInput Returns a simapp with custom OracleKeeper
 // to avoid messing with the hooks.

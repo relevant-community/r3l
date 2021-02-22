@@ -42,6 +42,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.pow = powers
 	suite.ctx = app.BaseApp.NewContext(checkTx, tmproto.Header{Height: 1})
 	suite.k = app.OracleKeeper
+
 	suite.app = app
 
 	querier := keeper.Querier{Keeper: app.OracleKeeper}

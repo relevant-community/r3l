@@ -12,13 +12,15 @@ How it works:
 - The every EndBlock, the r3l module queries Oracle for the pending rounds, tallies the votes and commits the results on-chain if the concensus threshold is reached
 
 Oracle TODOs:
- - [ ] Add option to delegate oracle worker (so validators can use a different account)
- - [ ] Expose querying pendingVotes and RoundVotes via cli and rpc endpoints (currently only used internally)
- - [ ] Implement a commit-reveal pattern to prevent free-rider oracle validators
- - [ ] Documentation
- 
- Example TODO:
- - [ ] Exchange price query example
+
+- [ ] Add option to delegate oracle worker (so validators can use a different account)
+- [x] Expose querying pendingVotes and Rounds via cli and rpc endpoints (currently only used internally)
+- [ ] Implement a commit-reveal pattern to prevent free-rider oracle validators
+- [ ] Documentation
+
+Example TODO:
+
+- [ ] Exchange price query example
 
 ## Run the r3l chain and the off-chain worker
 
@@ -42,7 +44,8 @@ r3ld query r3l list-score
 
 and you should see some reputation scores
 
-----
+---
+
 starport docs:
 
 ## Get started

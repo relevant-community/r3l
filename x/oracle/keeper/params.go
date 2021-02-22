@@ -5,8 +5,8 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
-// VotePeriod returns the number of blocks during which voting takes place.
-func (k Keeper) VotePeriod(ctx sdk.Context) (res int64) {
+// ClaimParams returns all claim params.
+func (k Keeper) ClaimParams(ctx sdk.Context) (res int64) {
 	k.paramspace.Get(ctx, types.KeyClaimParams, &res)
 	return
 }

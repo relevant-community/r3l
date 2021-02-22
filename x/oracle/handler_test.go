@@ -30,6 +30,7 @@ func testMsgSubmitClaim(r *require.Assertions, claim exported.Claim, sender sdk.
 }
 
 func (suite *HandlerTestSuite) SetupTest() {
+
 	app, ctx := testoracle.CreateTestInput()
 	powers := []int64{10, 10, 10}
 	_, validators, _ := testoracle.CreateValidators(suite.T(), ctx, app, powers)
@@ -51,7 +52,7 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 		{
 			testMsgSubmitClaim(
 				suite.Require(),
-				types.NewTestClaim(10, "test1", "test1"),
+				types.NewTestClaim(10, "test", "test"),
 				sdk.AccAddress(validator),
 			),
 			false,
@@ -59,7 +60,7 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 		{
 			testMsgSubmitClaim(
 				suite.Require(),
-				types.NewTestClaim(10, "test1", "test1"),
+				types.NewTestClaim(10, "test", "test"),
 				nonValidator,
 			),
 			true,

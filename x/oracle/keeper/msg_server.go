@@ -27,6 +27,17 @@ func (k msgServer) CreateClaim(goCtx context.Context, msg *types.MsgCreateClaim)
 	claim := msg.GetClaim()
 	validatorAddress := sdk.ValAddress(msg.GetSubmitter())
 
+	claimParams := k.GetParams(ctx).ClaimParams
+	var claimTypeExists bool
+	for _, param := range claimParams {
+		if param.ClaimType == claim.Type() {
+			claimTypeExists = true
+		}
+	}
+	if claimTypeExists != true {
+		return nil, sdkerrors.Wrap(types.ErrNoClaimTypeExists, claim.Type())
+	}
+
 	// TODO add validator delegation
 	// if !msg.Feeder.Equals(msg.Validator) {
 	// 	delegate := keeper.GetOracleDelegate(ctx, msg.Validator)
