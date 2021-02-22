@@ -14,7 +14,7 @@ func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.Va
 	claimType := claim.Type()
 	vote := types.NewVote(roundID, claim, validator, claimType)
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
 
 	var votes types.Round
 	bz := store.Get(types.RoundPrefix(claimType, roundID))
@@ -35,7 +35,7 @@ func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.Va
 
 // DeleteVotesForRound deletes all votes and claims for a given round and claimType
 func (k Keeper) DeleteVotesForRound(ctx sdk.Context, claimType string, roundID uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
 	roundKey := types.GetRoundKey(claimType, roundID)
 
 	round := k.GetRound(ctx, claimType, roundID)

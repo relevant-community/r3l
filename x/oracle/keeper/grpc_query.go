@@ -110,7 +110,7 @@ func (k Keeper) AllRounds(c context.Context, req *types.QueryAllRoundsRequest) (
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	roundStore := prefix.NewStore(store, types.KeyPrefix(types.VoteKey))
+	roundStore := prefix.NewStore(store, types.KeyPrefix(types.RoundKey))
 
 	pageRes, err := query.Paginate(roundStore, req.Pagination, func(key []byte, value []byte) error {
 		var round types.Round

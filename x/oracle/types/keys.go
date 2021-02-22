@@ -18,20 +18,14 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_capability"
 
-	// VoteKey defines the oracle vote store key
-	VoteKey = "vote"
-
-	// ResultKey defines the oracle result store key
-	ResultKey = "result"
+	// RoundKey defines the oracle vote store key
+	RoundKey = "vote"
 
 	// ClaimKey defines the oracle claim store key
 	ClaimKey = "Claim"
 
 	// PendingRoundKey defines the oracle claim store key
 	PendingRoundKey = "PendingRound"
-
-	// SuccessRoundKey defines the oracle claim store key
-	SuccessRoundKey = "SuccessRound"
 )
 
 // KeyPrefix helper
