@@ -3,18 +3,13 @@ package cli
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
-
-	// "strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/relevant-community/r3l/x/oracle/types"
 )
 
@@ -33,16 +28,19 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdListClaim())
 	cmd.AddCommand(CmdClaim())
-	cmd.AddCommand(GetCmdQueryParams())
+	cmd.AddCommand(CmdParams())
+	cmd.AddCommand(CmdRound())
+	cmd.AddCommand(CmdPendingRounds())
+	cmd.AddCommand(CmdAllRounds())
 
 	return cmd
 }
 
-// GetCmdQueryParams implements a command to fetch oracle parameters.
-func GetCmdQueryParams() *cobra.Command {
+// CmdParams implements a command to fetch oracle parameters.
+func CmdParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
-		Short: "Query the current oracle parameters",
+		Short: "query the current oracle parameters",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(`Query genesis parameters for the oracle module:
 
@@ -63,6 +61,108 @@ $ <appd> query oracle params
 			}
 
 			return clientCtx.PrintProto(&res.Params)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdRound implements a command to fetch an oracle round.
+func CmdRound() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "round",
+		Short: "query round by claimType and roundID",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			claimType := args[0]
+			roundID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			params := &types.QueryRoundRequest{ClaimType: claimType, RoundId: roundID}
+
+			res, err := queryClient.Round(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdPendingRounds implements a command to fetch all pending oracle rounds.
+func CmdPendingRounds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pending-rounds",
+		Short: "query pending rounds",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			claimType := args[0]
+			params := &types.QueryPendingRoundsRequest{ClaimType: claimType}
+
+			res, err := queryClient.PendingRounds(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdAllRounds implements a command to fetch all rounds.
+func CmdAllRounds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "all-rounds",
+		Short: "query all rounds",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			params := &types.QueryAllRoundsRequest{
+				Pagination: pageReq,
+			}
+
+			res, err := queryClient.AllRounds(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
 		},
 	}
 

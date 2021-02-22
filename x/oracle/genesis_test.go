@@ -35,7 +35,7 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 		genesisState *types.GenesisState
 		testClaim    []exported.Claim
 	)
-	roundVotes := []types.RoundVotes{}
+	roundVotes := []types.Round{}
 	params := types.DefaultParams()
 
 	testCases := []struct {
@@ -79,7 +79,7 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 			},
 			false,
 			func() {
-				suite.Empty(suite.keeper.GetAllClaim(suite.ctx))
+				suite.Empty(suite.keeper.GetAllClaims(suite.ctx))
 			},
 		},
 	}

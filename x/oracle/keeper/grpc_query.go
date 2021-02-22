@@ -63,8 +63,8 @@ func (k Keeper) Claim(c context.Context, req *types.QueryClaimRequest) (*types.Q
 	return &types.QueryClaimResponse{Claim: claimAny}, nil
 }
 
-// AllClaim implements the Query/AllClaim gRPC method
-func (k Keeper) AllClaim(c context.Context, req *types.QueryAllClaimRequest) (*types.QueryAllClaimResponse, error) {
+// AllClaims implements the Query/AllClaims gRPC method
+func (k Keeper) AllClaims(c context.Context, req *types.QueryAllClaimsRequest) (*types.QueryAllClaimsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -97,5 +97,69 @@ func (k Keeper) AllClaim(c context.Context, req *types.QueryAllClaimRequest) (*t
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &types.QueryAllClaimResponse{Claim: claims, Pagination: pageRes}, nil
+	return &types.QueryAllClaimsResponse{Claims: claims, Pagination: pageRes}, nil
+}
+
+// AllRounds implements the Query/AllRounds gRPC method
+func (k Keeper) AllRounds(c context.Context, req *types.QueryAllRoundsRequest) (*types.QueryAllRoundsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var rounds []types.Round
+	ctx := sdk.UnwrapSDKContext(c)
+
+	store := ctx.KVStore(k.storeKey)
+	roundStore := prefix.NewStore(store, types.KeyPrefix(types.VoteKey))
+
+	pageRes, err := query.Paginate(roundStore, req.Pagination, func(key []byte, value []byte) error {
+		var round types.Round
+		if err := k.cdc.UnmarshalBinaryBare(value, &round); err != nil {
+			return err
+		}
+
+		rounds = append(rounds, round)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &types.QueryAllRoundsResponse{Rounds: rounds, Pagination: pageRes}, nil
+}
+
+// PendingRounds implements the Query/PendingRounds gRPC method
+func (k Keeper) PendingRounds(c context.Context, req *types.QueryPendingRoundsRequest) (*types.QueryPendingRoundsResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(c)
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.ClaimType == "" {
+		return nil, status.Error(codes.InvalidArgument, "missing claimType")
+	}
+
+	pendingRounds := k.GetPendingRounds(sdkCtx, req.ClaimType)
+	return &types.QueryPendingRoundsResponse{PendingRounds: pendingRounds}, nil
+}
+
+// Round implements the Query/Round gRPC method
+func (k Keeper) Round(c context.Context, req *types.QueryRoundRequest) (*types.QueryRoundResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(c)
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.ClaimType == "" {
+		return nil, status.Error(codes.InvalidArgument, "missing claimType")
+	}
+
+	if req.RoundId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "missing RoundId")
+	}
+
+	round := k.GetRound(sdkCtx, req.ClaimType, req.RoundId)
+	return &types.QueryRoundResponse{Round: *round}, nil
 }

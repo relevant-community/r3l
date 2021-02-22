@@ -26,6 +26,6 @@ func (suite *KeeperTestSuite) TestIterateClaims() {
 	numClaims := 20
 	suite.populateClaims(ctx, numClaims)
 
-	claims := suite.k.GetAllClaim(ctx)
+	claims := suite.k.GetAllClaims(ctx)
 	suite.Len(claims, numClaims)
 }

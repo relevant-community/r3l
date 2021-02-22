@@ -18,10 +18,10 @@ func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.Va
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
 
-	var votes types.RoundVotes
+	var votes types.Round
 	bz := store.Get(types.RoundPrefix(claimType, roundID))
 	if len(bz) == 0 {
-		votes = types.RoundVotes{
+		votes = types.Round{
 			Votes:   []types.Vote{*vote},
 			RoundId: roundID,
 			Type:    claimType,
@@ -31,18 +31,18 @@ func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.Va
 		votes.Votes = append(votes.Votes, *vote)
 	}
 
-	k.CreateRound(ctx, vote)
+	k.AddPendingRound(ctx, vote)
 	store.Set(types.RoundPrefix(claimType, roundID), k.cdc.MustMarshalBinaryBare(&votes))
 }
 
-// SetRoundVote creates roundVote (used in genesis file)
-func (k Keeper) SetRoundVote(ctx sdk.Context, roundVote types.RoundVotes) {
+// CreateRound creates a Round (used in genesis file)
+func (k Keeper) CreateRound(ctx sdk.Context, round types.Round) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
-	store.Set(types.RoundPrefix(roundVote.Type, roundVote.RoundId), k.cdc.MustMarshalBinaryBare(&roundVote))
+	store.Set(types.RoundPrefix(round.Type, round.RoundId), k.cdc.MustMarshalBinaryBare(&round))
 }
 
-// CreateRound adds the roundId to the pending que
-func (k Keeper) CreateRound(ctx sdk.Context, vote *types.Vote) {
+// AddPendingRound adds the roundId to the pending que
+func (k Keeper) AddPendingRound(ctx sdk.Context, vote *types.Vote) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PendingRoundKey))
 	bz := []byte(strconv.FormatUint(vote.RoundId, 10))
 	store.Set(types.RoundPrefix(vote.Type, vote.RoundId), bz)
@@ -78,34 +78,33 @@ func (k Keeper) DeleteVotesForRound(ctx sdk.Context, claimType string, roundID u
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
 	roundKey := types.GetRoundKey(claimType, roundID)
 
-	roundVote := k.GetVotesForRound(ctx, claimType, roundID)
+	round := k.GetRound(ctx, claimType, roundID)
 
-	for _, vote := range roundVote.Votes {
+	for _, vote := range round.Votes {
 		k.DeleteClaim(ctx, []byte(vote.ClaimHash))
 	}
 	store.Delete(types.KeyPrefix(roundKey))
 }
 
-// GetRoundVotes retrieves all the GetRoundVotes (used in genesis)
-func (k Keeper) GetRoundVotes(ctx sdk.Context) (roundVotes []types.RoundVotes) {
+// GetAllRounds retrieves all the Rounds (used in genesis)
+func (k Keeper) GetAllRounds(ctx sdk.Context) (rounds []types.Round) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.VoteKey))
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var roundVote types.RoundVotes
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &roundVote)
-		roundVotes = append(roundVotes, roundVote)
+		var round types.Round
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &round)
+		rounds = append(rounds, round)
 	}
 	return
 }
 
-// GetVotesForRound retrieves all the Votes for a given roundKey
-// roundKey is a combinatio of claimType and roundId
-func (k Keeper) GetVotesForRound(ctx sdk.Context, claimType string, roundID uint64) *types.RoundVotes {
+// GetRound retrieves a Round that contains all Votes for a claimType and roundID
+func (k Keeper) GetRound(ctx sdk.Context, claimType string, roundID uint64) *types.Round {
 	roundKey := types.GetRoundKey(claimType, roundID)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoteKey))
-	var votes types.RoundVotes
+	var votes types.Round
 	bz := store.Get(types.KeyPrefix(roundKey))
 	if len(bz) == 0 {
 		return nil
@@ -117,7 +116,7 @@ func (k Keeper) GetVotesForRound(ctx sdk.Context, claimType string, roundID uint
 // TallyVotes tallies up the votes for a given Claim and returns the result with the maximum claim
 // vote.ClaimHash
 func (k Keeper) TallyVotes(ctx sdk.Context, claimType string, roundID uint64) *types.RoundResult {
-	votes := k.GetVotesForRound(ctx, claimType, roundID)
+	votes := k.GetRound(ctx, claimType, roundID)
 
 	voteMap := make(map[string]*types.RoundResult)
 	var maxVotePower int64

@@ -17,8 +17,8 @@ func TestDefaultGenesisState(t *testing.T) {
 	require.NotNil(t, gs.Claims)
 	require.Len(t, gs.Claims, 0)
 
-	require.NotNil(t, gs.RoundVotes)
-	require.Len(t, gs.RoundVotes, 0)
+	require.NotNil(t, gs.Rounds)
+	require.Len(t, gs.Rounds, 0)
 
 	require.NotNil(t, gs.Params)
 	require.Equal(t, gs.Params, types.DefaultParams())
@@ -27,7 +27,7 @@ func TestDefaultGenesisState(t *testing.T) {
 func TestNewGenesisState(t *testing.T) {
 	var (
 		claims     []exported.Claim
-		roundVotes []types.RoundVotes
+		roundVotes []types.Round
 	)
 
 	testCases := []struct {
@@ -39,7 +39,7 @@ func TestNewGenesisState(t *testing.T) {
 			"can proto marshal",
 			func() {
 				claims = []exported.Claim{&types.TestClaim{}}
-				roundVotes = []types.RoundVotes{}
+				roundVotes = []types.Round{}
 			},
 			true,
 		},
@@ -67,7 +67,7 @@ func TestGenesisStateValidate(t *testing.T) {
 		genesisState *types.GenesisState
 		testClaim    []exported.Claim
 	)
-	roundVotes := []types.RoundVotes{}
+	roundVotes := []types.Round{}
 	params := types.DefaultParams()
 
 	testCases := []struct {

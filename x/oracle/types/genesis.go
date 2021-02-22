@@ -16,7 +16,7 @@ const DefaultIndex uint64 = 1
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(
 	params Params,
-	roundVotes []RoundVotes,
+	rounds []Round,
 	_claims []exported.Claim,
 ) *GenesisState {
 
@@ -34,18 +34,18 @@ func NewGenesisState(
 	}
 
 	return &GenesisState{
-		Params:     params,
-		RoundVotes: roundVotes,
-		Claims:     claims,
+		Params: params,
+		Rounds: rounds,
+		Claims: claims,
 	}
 }
 
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params:     DefaultParams(),
-		Claims:     []*types.Any{},
-		RoundVotes: []RoundVotes{},
+		Params: DefaultParams(),
+		Claims: []*types.Any{},
+		Rounds: []Round{},
 	}
 }
 

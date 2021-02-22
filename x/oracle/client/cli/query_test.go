@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestGetQueryCmd() {
 		"list-claim (default pagination)": {
 			cli.CmdListClaim(),
 			[]string{},
-			"claim: []\npagination:\n  next_key: null\n  total: \"0\"",
+			"claims: []\npagination:\n  next_key: null\n  total: \"0\"",
 			false,
 		},
 	}

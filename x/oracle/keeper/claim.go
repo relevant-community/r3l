@@ -29,8 +29,8 @@ func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) exported.Claim 
 	return k.MustUnmarshalClaim(bz)
 }
 
-// GetAllClaim returns all claims
-func (k Keeper) GetAllClaim(ctx sdk.Context) (msgs []exported.Claim) {
+// GetAllClaims returns all claims
+func (k Keeper) GetAllClaims(ctx sdk.Context) (msgs []exported.Claim) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.ClaimKey))
 

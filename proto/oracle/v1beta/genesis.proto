@@ -17,6 +17,7 @@ message GenesisState {
   
     // params defines all the paramaters of related to deposit.
     Params params = 1 [(gogoproto.nullable) = false];
-    repeated RoundVotes roundVotes = 2 [(gogoproto.nullable) = false];
-    repeated google.protobuf.Any claims  = 3;
+    repeated google.protobuf.Any claims  =2;
+    repeated Round rounds = 3 [(gogoproto.nullable) = false];
+    repeated uint64 pending = 4 [(gogoproto.nullable) = false];
 }

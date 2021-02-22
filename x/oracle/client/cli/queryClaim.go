@@ -48,7 +48,7 @@ func CmdClaim() *cobra.Command {
 
 func CmdListClaim() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-claim",
+		Use:   "all-claims",
 		Short: "list all claims",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -63,11 +63,11 @@ func CmdListClaim() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClaimRequest{
+			params := &types.QueryAllClaimsRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.AllClaim(context.Background(), params)
+			res, err := queryClient.AllClaims(context.Background(), params)
 			if err != nil {
 				return err
 			}

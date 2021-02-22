@@ -13,8 +13,8 @@ message Vote {
   bytes validator = 5 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
 }
 
-// RoundVotes is a set of all claim votes for a given round
-message RoundVotes {
+// Round contains all claim votes for a given round
+message Round {
   uint64 roundId = 1;
   string type = 2; // namespace so we can have multiple oracles
   repeated Vote votes = 3 [(gogoproto.nullable) = false];

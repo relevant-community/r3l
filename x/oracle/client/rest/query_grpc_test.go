@@ -71,13 +71,13 @@ func (s *IntegrationTestSuite) TestGRPCQueries() {
 		},
 		{
 			"Get all claims",
-			fmt.Sprintf("%s/r3l/oracle/v1beta1/allclaim", baseURL),
+			fmt.Sprintf("%s/r3l/oracle/v1beta1/allclaims", baseURL),
 			map[string]string{
 				grpctypes.GRPCBlockHeightHeader: "1",
 			},
 			false,
-			&types.QueryAllClaimResponse{},
-			&types.QueryAllClaimResponse{
+			&types.QueryAllClaimsResponse{},
+			&types.QueryAllClaimsResponse{
 				Pagination: &query.PageResponse{Total: 0},
 			},
 		},

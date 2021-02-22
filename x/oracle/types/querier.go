@@ -5,19 +5,24 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-const (
-	QueryListClaim  = "list-claim"
-	QueryClaim      = "claim"
-	QueryParameters = "parameters"
-)
+// const (
+// 	QueryAllClaims     = "all-claims"
+// 	QueryClaim         = "claim"
+// 	QueryParameters    = "parameters"
+// 	QueryRound         = "round"
+// 	QueryAllRounds     = "all-rounds"
+// 	QueryPenidngRounds = "pending-rounds"
+// )
 
-type QueryAllClaimParams struct {
+// QueryAllClaimsParams querey params struct
+type QueryAllClaimsParams struct {
 	Page  int `json:"page" yaml:"page"`
 	Limit int `json:"limit" yaml:"limit"`
 }
 
-func NewQueryAllClaimParams(page, limit int) QueryAllClaimParams {
-	return QueryAllClaimParams{Page: page, Limit: limit}
+// NewQueryAllClaimsParams creates a new instance of QueryAllClaimsParams.
+func NewQueryAllClaimsParams(page, limit int) QueryAllClaimsParams {
+	return QueryAllClaimsParams{Page: page, Limit: limit}
 }
 
 // NewQueryClaimRequest creates a new instance of QueryClaimRequest.
@@ -25,7 +30,7 @@ func NewQueryClaimRequest(hash tmbytes.HexBytes) *QueryClaimRequest {
 	return &QueryClaimRequest{ClaimHash: hash}
 }
 
-// NewQueryAllClaimRequest creates a new instance of QueryAllClaimRequest.
-func NewQueryAllClaimRequest(pageReq *query.PageRequest) *QueryAllClaimRequest {
-	return &QueryAllClaimRequest{Pagination: pageReq}
+// NewQueryAllClaimsRequest creates a new instance of QueryAllClaimRequest.
+func NewQueryAllClaimsRequest(pageReq *query.PageRequest) *QueryAllClaimsRequest {
+	return &QueryAllClaimsRequest{Pagination: pageReq}
 }

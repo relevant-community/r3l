@@ -127,23 +127,23 @@ func (suite *KeeperTestSuite) TestQueryClaim() {
 
 func (suite *KeeperTestSuite) TestQueryAllClaims() {
 	var (
-		req *types.QueryAllClaimRequest
+		req *types.QueryAllClaimsRequest
 	)
 
 	testCases := []struct {
 		msg       string
 		malleate  func()
 		expPass   bool
-		posttests func(res *types.QueryAllClaimResponse)
+		posttests func(res *types.QueryAllClaimsResponse)
 	}{
 		{
 			"success without claim",
 			func() {
-				req = &types.QueryAllClaimRequest{}
+				req = &types.QueryAllClaimsRequest{}
 			},
 			true,
-			func(res *types.QueryAllClaimResponse) {
-				suite.Require().Empty(res.Claim)
+			func(res *types.QueryAllClaimsResponse) {
+				suite.Require().Empty(res.Claims)
 			},
 		},
 		{
@@ -156,11 +156,11 @@ func (suite *KeeperTestSuite) TestQueryAllClaims() {
 					Limit:      50,
 					CountTotal: false,
 				}
-				req = types.NewQueryAllClaimRequest(pageReq)
+				req = types.NewQueryAllClaimsRequest(pageReq)
 			},
 			true,
-			func(res *types.QueryAllClaimResponse) {
-				suite.Equal(len(res.Claim), 50)
+			func(res *types.QueryAllClaimsResponse) {
+				suite.Equal(len(res.Claims), 50)
 				suite.NotNil(res.Pagination.NextKey)
 			},
 		},
@@ -173,7 +173,7 @@ func (suite *KeeperTestSuite) TestQueryAllClaims() {
 			tc.malleate()
 			ctx := sdk.WrapSDKContext(suite.ctx)
 
-			res, err := suite.queryClient.AllClaim(ctx, req)
+			res, err := suite.queryClient.AllClaims(ctx, req)
 
 			if tc.expPass {
 				suite.Require().NoError(err)

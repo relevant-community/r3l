@@ -33,7 +33,7 @@ type KeeperTestSuite struct {
 func (suite *KeeperTestSuite) SetupTest() {
 	checkTx := false
 	app, ctx := testoracle.CreateTestInput()
-	cdc := app.LegacyAmino()
+	// cdc := app.LegacyAmino()
 
 	powers := []int64{10, 10, 10}
 	_, validators, _ := testoracle.CreateValidators(suite.T(), ctx, app, powers)
@@ -49,7 +49,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	types.RegisterQueryServer(queryHelper, querier)
 
 	suite.queryClient = types.NewQueryClient(queryHelper)
-	suite.querier = keeper.NewQuerier(app.OracleKeeper, cdc)
+	// suite.querier = keeper.NewQuerier(app.OracleKeeper, cdc)
 
 	// types.RegisterLegacyAminoCodec(cdc)
 
