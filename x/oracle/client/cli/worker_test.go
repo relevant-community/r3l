@@ -48,7 +48,6 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 		expectErr    bool
 		respType     proto.Message
 		expectedCode uint32
-		// expectedRes
 	}{
 		"run-worker": {
 			[]string{

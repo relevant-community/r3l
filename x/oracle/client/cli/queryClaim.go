@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CmdClaim queries a claim by hash
 func CmdClaim() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "claim",
@@ -46,10 +47,11 @@ func CmdClaim() *cobra.Command {
 	return cmd
 }
 
-func CmdListClaim() *cobra.Command {
+// CmdAllClaims queries all clams
+func CmdAllClaims() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "all-claims",
-		Short: "list all claims",
+		Short: "query all claims",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

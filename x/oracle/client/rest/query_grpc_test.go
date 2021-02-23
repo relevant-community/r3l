@@ -46,7 +46,6 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) TestGRPCQueries() {
 	val := s.network.Validators[0]
-	fmt.Println("GRPC", val.AppConfig.GRPC.Enable)
 	baseURL := val.APIAddress
 
 	testCases := []struct {
@@ -97,9 +96,7 @@ func (s *IntegrationTestSuite) TestGRPCQueries() {
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
-				fmt.Println(err)
 				s.Require().NoError(err)
-				fmt.Println(tc.respType.String())
 				s.Require().Equal(tc.expected.String(), tc.respType.String())
 			}
 		})

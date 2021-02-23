@@ -1,7 +1,12 @@
 package types
 
-import "strconv"
+import (
+	"strconv"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// Keys for oracle store, with <prefix><key> -> <value>
 const (
 	// ModuleName defines the module name
 	ModuleName = "oracle"
@@ -26,11 +31,19 @@ const (
 
 	// PendingRoundKey defines the oracle claim store key
 	PendingRoundKey = "PendingRound"
+
+	// - Delegation<val_address> -> <delegate_address>
+	FeedDelegateKeyPrefix = "Delegation" // key for validator feed delegation
 )
 
 // KeyPrefix helper
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+// GetFeedDelegateKey returns the validator for a given delegate key
+func GetFeedDelegateKey(del sdk.AccAddress) []byte {
+	return append(KeyPrefix(FeedDelegateKeyPrefix), del.Bytes()...)
 }
 
 // GetRoundKey helper

@@ -1,27 +1,12 @@
-package oracle_test
+package keeper_test
 
 import (
-	"testing"
-
-	"github.com/relevant-community/r3l/app"
-	"github.com/relevant-community/r3l/x/oracle"
 	"github.com/relevant-community/r3l/x/oracle/exported"
-	"github.com/relevant-community/r3l/x/oracle/testoracle"
 	"github.com/relevant-community/r3l/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
-
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
-
-type HandlerTestSuite struct {
-	suite.Suite
-	handler    sdk.Handler
-	app        *app.App
-	validators []sdk.ValAddress
-}
 
 func testMsgSubmitClaim(r *require.Assertions, claim exported.Claim, sender sdk.AccAddress) exported.MsgCreateClaimI {
 	msg, err := types.NewMsgCreateClaim(sender, claim)
@@ -29,21 +14,13 @@ func testMsgSubmitClaim(r *require.Assertions, claim exported.Claim, sender sdk.
 	return msg
 }
 
-func (suite *HandlerTestSuite) SetupTest() {
-
-	app, ctx := testoracle.CreateTestInput()
-	powers := []int64{10, 10, 10}
-	_, validators, _ := testoracle.CreateValidators(suite.T(), ctx, app, powers)
-	suite.validators = validators
-	suite.handler = oracle.NewHandler(app.OracleKeeper)
-	suite.app = app
-}
-
-func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
-
-	// pk := ed25519.GenPrivKey()
-	nonValidator := sdk.AccAddress("test________________")
+func (suite *KeeperTestSuite) TestMsgSubmitClaim() {
+	nonValidator := suite.addrs[3]
 	validator := suite.validators[0]
+	val1 := suite.validators[1]
+	delegator := suite.addrs[4]
+
+	suite.k.SetValidatorDelegateAddress(suite.ctx, sdk.AccAddress(val1), delegator)
 
 	testCases := []struct {
 		msg       sdk.Msg
@@ -60,7 +37,15 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 		{
 			testMsgSubmitClaim(
 				suite.Require(),
-				types.NewTestClaim(10, "test", "test"),
+				types.NewTestClaim(11, "test", "test"),
+				sdk.AccAddress(delegator),
+			),
+			false,
+		},
+		{
+			testMsgSubmitClaim(
+				suite.Require(),
+				types.NewTestClaim(12, "test", "test"),
 				nonValidator,
 			),
 			true,
@@ -68,8 +53,7 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 	}
 
 	for i, tc := range testCases {
-		ctx := suite.app.BaseApp.NewContext(false, tmproto.Header{Height: suite.app.LastBlockHeight() + 1})
-
+		ctx := suite.ctx
 		res, err := suite.handler(ctx, tc.msg)
 		if tc.expectErr {
 			suite.Require().Error(err, "expected error; tc #%d", i)
@@ -84,8 +68,4 @@ func (suite *HandlerTestSuite) TestMsgSubmitClaim() {
 			suite.Require().Equal(msg.GetClaim().Hash().Bytes(), resultData.Hash, "invalid hash; tc #%d", i)
 		}
 	}
-}
-
-func TestHandlerTestSuite(t *testing.T) {
-	suite.Run(t, new(HandlerTestSuite))
 }

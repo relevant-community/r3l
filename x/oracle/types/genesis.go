@@ -4,6 +4,7 @@ import (
 	fmt "fmt"
 
 	types "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
@@ -19,6 +20,7 @@ func NewGenesisState(
 	rounds []Round,
 	_claims []exported.Claim,
 	pending map[string]([]uint64),
+	delegations []MsgDelegateFeedConsent,
 ) *GenesisState {
 
 	claims := make([]*types.Any, len(_claims))
@@ -40,10 +42,11 @@ func NewGenesisState(
 	}
 
 	return &GenesisState{
-		Params:  params,
-		Rounds:  rounds,
-		Claims:  claims,
-		Pending: genPending,
+		Params:            params,
+		Rounds:            rounds,
+		Claims:            claims,
+		Pending:           genPending,
+		FeederDelegations: delegations,
 	}
 }
 
@@ -60,6 +63,16 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
+
+	for i, feederDelegation := range gs.FeederDelegations {
+		if _, err := sdk.AccAddressFromBech32(feederDelegation.Delegate); err != nil {
+			return fmt.Errorf("invalid feeder at index %d: %w", i, err)
+		}
+		if _, err := sdk.AccAddressFromBech32(feederDelegation.Validator); err != nil {
+			return fmt.Errorf("invalid feeder at index %d: %w", i, err)
+		}
+	}
+
 	for _, c := range gs.Claims {
 		claim, ok := c.GetCachedValue().(exported.Claim)
 		if !ok {

@@ -26,9 +26,10 @@ func TestDefaultGenesisState(t *testing.T) {
 
 func TestNewGenesisState(t *testing.T) {
 	var (
-		claims  []exported.Claim
-		rounds  []types.Round
-		pending map[string]([]uint64)
+		claims      []exported.Claim
+		rounds      []types.Round
+		pending     map[string]([]uint64)
+		delegations []types.MsgDelegateFeedConsent
 	)
 
 	testCases := []struct {
@@ -55,11 +56,11 @@ func TestNewGenesisState(t *testing.T) {
 
 			if tc.expPass {
 				require.NotPanics(t, func() {
-					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending)
+					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending, delegations)
 				})
 			} else {
 				require.Panics(t, func() {
-					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending)
+					types.NewGenesisState(types.DefaultParams(), rounds, claims, pending, delegations)
 				})
 			}
 		})
@@ -71,6 +72,7 @@ func TestGenesisStateValidate(t *testing.T) {
 		genesisState *types.GenesisState
 		testClaim    []exported.Claim
 		pending      map[string]([]uint64)
+		delegations  []types.MsgDelegateFeedConsent
 	)
 	round := []types.Round{}
 	params := types.DefaultParams()
@@ -91,7 +93,7 @@ func TestGenesisStateValidate(t *testing.T) {
 						ClaimType:   "test",
 					}
 				}
-				genesisState = types.NewGenesisState(params, round, testClaim, pending)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending, delegations)
 			},
 			true,
 		},
@@ -106,7 +108,7 @@ func TestGenesisStateValidate(t *testing.T) {
 						ClaimType:   "test",
 					}
 				}
-				genesisState = types.NewGenesisState(params, round, testClaim, pending)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending, delegations)
 			},
 			false,
 		},

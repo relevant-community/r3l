@@ -13,7 +13,7 @@ How it works:
 
 Oracle TODOs:
 
-- [ ] Add option to delegate oracle worker (so validators can use a different account)
+- [x] Add option to delegate oracle worker (so validators can use a different account)
 - [x] Expose querying pendingVotes and Rounds via cli and rpc endpoints (currently only used internally)
 - [ ] Implement a commit-reveal pattern to prevent free-rider oracle validators
 - [ ] Documentation

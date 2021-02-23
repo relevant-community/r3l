@@ -20,6 +20,7 @@ type GenesisTestSuite struct {
 	ctx        sdk.Context
 	k          keeper.Keeper
 	validators []sdk.ValAddress
+	addrs      []sdk.AccAddress
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
@@ -31,8 +32,9 @@ func (suite *GenesisTestSuite) SetupTest() {
 	suite.k = app.OracleKeeper
 
 	powers := []int64{10, 10, 10}
-	_, validators, _ := testoracle.CreateValidators(suite.T(), suite.ctx, app, powers)
+	addrs, validators, _ := testoracle.CreateValidators(suite.T(), suite.ctx, app, powers)
 	suite.validators = validators
+	suite.addrs = addrs
 }
 
 func (suite *GenesisTestSuite) TestGenesis() {
@@ -47,6 +49,12 @@ func (suite *GenesisTestSuite) TestGenesis() {
 	params.ClaimParams = []types.ClaimParams{
 		{
 			ClaimType: claimType,
+		},
+	}
+	delegations := []types.MsgDelegateFeedConsent{
+		{
+			Validator: suite.addrs[0].String(),
+			Delegate:  suite.addrs[4].String(),
 		},
 	}
 
@@ -73,7 +81,7 @@ func (suite *GenesisTestSuite) TestGenesis() {
 				pending := map[string][]uint64{
 					"test": {98, 99},
 				}
-				genesisState = types.NewGenesisState(params, round, testClaim, pending)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending, delegations)
 			},
 			true,
 			func() {
@@ -97,7 +105,7 @@ func (suite *GenesisTestSuite) TestGenesis() {
 					}
 				}
 				pending := map[string][]uint64{}
-				genesisState = types.NewGenesisState(params, round, testClaim, pending)
+				genesisState = types.NewGenesisState(params, round, testClaim, pending, delegations)
 			},
 			false,
 			func() {

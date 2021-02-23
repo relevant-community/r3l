@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/relevant-community/r3l/app"
+	"github.com/relevant-community/r3l/x/oracle"
 	"github.com/relevant-community/r3l/x/oracle/exported"
 	"github.com/relevant-community/r3l/x/oracle/keeper"
 	"github.com/relevant-community/r3l/x/oracle/testoracle"
@@ -28,6 +29,8 @@ type KeeperTestSuite struct {
 	validators []sdk.ValAddress
 	pow        []int64
 	k          keeper.Keeper
+	handler    sdk.Handler
+	addrs      []sdk.AccAddress
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
@@ -36,8 +39,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 	// cdc := app.LegacyAmino()
 
 	powers := []int64{10, 10, 10}
-	_, validators, _ := testoracle.CreateValidators(suite.T(), ctx, app, powers)
+	addrs, validators, _ := testoracle.CreateValidators(suite.T(), ctx, app, powers)
 
+	suite.addrs = addrs
 	suite.validators = validators
 	suite.pow = powers
 	suite.ctx = app.BaseApp.NewContext(checkTx, tmproto.Header{Height: 1})
@@ -50,9 +54,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	types.RegisterQueryServer(queryHelper, querier)
 
 	suite.queryClient = types.NewQueryClient(queryHelper)
-	// suite.querier = keeper.NewQuerier(app.OracleKeeper, cdc)
-
-	// types.RegisterLegacyAminoCodec(cdc)
+	suite.handler = oracle.NewHandler(app.OracleKeeper)
 
 }
 

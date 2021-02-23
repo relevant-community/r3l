@@ -10,7 +10,7 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
 
-// Message types for the evidence module
+// Message types for the oracle module
 const (
 	TypeMsgCreateClaim = "create_claim"
 )
@@ -44,7 +44,7 @@ func (msg *MsgCreateClaim) Type() string {
 	return TypeMsgCreateClaim
 }
 
-// GetSigners get msg get signers
+// GetSigners get msg signers
 func (msg *MsgCreateClaim) GetSigners() []sdk.AccAddress {
 	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
 	if err != nil {
@@ -90,6 +90,15 @@ func (msg MsgCreateClaim) GetSubmitter() sdk.AccAddress {
 	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
 	if err != nil {
 		return nil
+	}
+	return accAddr
+}
+
+// MustGetSubmitter returns submitter
+func (msg MsgCreateClaim) MustGetSubmitter() sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
+	if err != nil {
+		panic(err)
 	}
 	return accAddr
 }

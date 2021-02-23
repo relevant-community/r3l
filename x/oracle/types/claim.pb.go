@@ -4,17 +4,9 @@
 package types
 
 import (
-	bytes "bytes"
-	context "context"
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/gogo/protobuf/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/regen-network/cosmos-proto"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -31,92 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateClaim represents a message that supports submitting an arbitrary
-// oracle Claim.
-type MsgCreateClaim struct {
-	Submitter string     `protobuf:"bytes,1,opt,name=submitter,proto3" json:"submitter,omitempty"`
-	Claim     *types.Any `protobuf:"bytes,2,opt,name=claim,proto3" json:"claim,omitempty"`
-}
-
-func (m *MsgCreateClaim) Reset()         { *m = MsgCreateClaim{} }
-func (m *MsgCreateClaim) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaim) ProtoMessage()    {}
-func (*MsgCreateClaim) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b8bd8487bad9ed4f, []int{0}
-}
-func (m *MsgCreateClaim) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCreateClaim) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCreateClaim.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCreateClaim) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaim.Merge(m, src)
-}
-func (m *MsgCreateClaim) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCreateClaim) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaim.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCreateClaim proto.InternalMessageInfo
-
-// MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type.
-type MsgCreateClaimResponse struct {
-	// hash defines the hash of the evidence.
-	Hash []byte `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
-}
-
-func (m *MsgCreateClaimResponse) Reset()         { *m = MsgCreateClaimResponse{} }
-func (m *MsgCreateClaimResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaimResponse) ProtoMessage()    {}
-func (*MsgCreateClaimResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b8bd8487bad9ed4f, []int{1}
-}
-func (m *MsgCreateClaimResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCreateClaimResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCreateClaimResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCreateClaimResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaimResponse.Merge(m, src)
-}
-func (m *MsgCreateClaimResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCreateClaimResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaimResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCreateClaimResponse proto.InternalMessageInfo
-
-func (m *MsgCreateClaimResponse) GetHash() []byte {
-	if m != nil {
-		return m.Hash
-	}
-	return nil
-}
-
 // TestClaim is a concrete Claim type we use for testing
 type TestClaim struct {
 	BlockHeight int64  `protobuf:"varint,1,opt,name=blockHeight,proto3" json:"blockHeight,omitempty"`
@@ -128,7 +34,7 @@ func (m *TestClaim) Reset()         { *m = TestClaim{} }
 func (m *TestClaim) String() string { return proto.CompactTextString(m) }
 func (*TestClaim) ProtoMessage()    {}
 func (*TestClaim) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b8bd8487bad9ed4f, []int{2}
+	return fileDescriptor_b8bd8487bad9ed4f, []int{0}
 }
 func (m *TestClaim) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -179,65 +85,30 @@ func (m *TestClaim) GetContent() string {
 }
 
 func init() {
-	proto.RegisterType((*MsgCreateClaim)(nil), "r3l.oracle.v1beta1.MsgCreateClaim")
-	proto.RegisterType((*MsgCreateClaimResponse)(nil), "r3l.oracle.v1beta1.MsgCreateClaimResponse")
 	proto.RegisterType((*TestClaim)(nil), "r3l.oracle.v1beta1.TestClaim")
 }
 
 func init() { proto.RegisterFile("oracle/v1beta/claim.proto", fileDescriptor_b8bd8487bad9ed4f) }
 
 var fileDescriptor_b8bd8487bad9ed4f = []byte{
-	// 384 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x92, 0x31, 0x0e, 0xd3, 0x30,
-	0x14, 0x86, 0x63, 0xda, 0x02, 0x71, 0x11, 0x83, 0x55, 0xa1, 0xb4, 0x42, 0x69, 0x94, 0xa9, 0x42,
-	0xd4, 0xa6, 0xad, 0x58, 0xd8, 0x68, 0x17, 0x96, 0x32, 0x44, 0x9d, 0x90, 0x10, 0x4a, 0xc2, 0xc3,
-	0x89, 0x48, 0xe2, 0x28, 0x76, 0x2a, 0x72, 0x03, 0x46, 0x8e, 0xd0, 0x91, 0x03, 0x70, 0x08, 0xc4,
-	0xd4, 0x91, 0x11, 0xa5, 0x0b, 0xc7, 0x40, 0xb5, 0x89, 0xda, 0x8a, 0x81, 0xed, 0xbd, 0xf7, 0x3f,
-	0xfb, 0xff, 0xfc, 0xcb, 0x78, 0x2c, 0xaa, 0x30, 0xce, 0x80, 0xed, 0x17, 0x11, 0xa8, 0x90, 0xc5,
-	0x59, 0x98, 0xe6, 0xb4, 0xac, 0x84, 0x12, 0x84, 0x54, 0xab, 0x8c, 0x1a, 0x99, 0x1a, 0x79, 0x31,
-	0x19, 0x71, 0xc1, 0x85, 0x96, 0xd9, 0xb9, 0x32, 0x9b, 0x93, 0x31, 0x17, 0x82, 0x67, 0xc0, 0x74,
-	0x17, 0xd5, 0x1f, 0x58, 0x58, 0x34, 0x9d, 0x14, 0x0b, 0x99, 0x0b, 0xf9, 0xce, 0x9c, 0x31, 0x8d,
-	0x91, 0x7c, 0x81, 0x1f, 0x6e, 0x25, 0xdf, 0x54, 0x10, 0x2a, 0xd8, 0x9c, 0x7d, 0xc9, 0x63, 0x6c,
-	0xcb, 0x3a, 0xca, 0x53, 0xa5, 0xa0, 0x72, 0x90, 0x87, 0x66, 0x76, 0x70, 0x19, 0x90, 0xe7, 0x78,
-	0xa0, 0xf1, 0x9c, 0x3b, 0x1e, 0x9a, 0x0d, 0x97, 0x23, 0x6a, 0x5c, 0x69, 0xe7, 0x4a, 0x5f, 0x16,
-	0xcd, 0xda, 0xfe, 0xf1, 0x6d, 0x3e, 0xd0, 0xb7, 0x05, 0x66, 0xfb, 0xc5, 0xfd, 0xcf, 0x87, 0xa9,
-	0xf5, 0xfb, 0x30, 0xb5, 0xfc, 0xa7, 0xf8, 0xd1, 0xad, 0x61, 0x00, 0xb2, 0x14, 0x85, 0x04, 0x42,
-	0x70, 0x3f, 0x09, 0x65, 0xe2, 0xf4, 0x3d, 0x34, 0x7b, 0x10, 0xe8, 0xda, 0x07, 0x6c, 0xef, 0x40,
-	0x2a, 0x43, 0xe6, 0xe1, 0x61, 0x94, 0x89, 0xf8, 0xe3, 0x2b, 0x48, 0x79, 0xa2, 0x34, 0x5b, 0x2f,
-	0xb8, 0x1e, 0x9d, 0xd9, 0xb5, 0xdf, 0xae, 0x29, 0x41, 0x13, 0xda, 0xc1, 0x65, 0x40, 0x1c, 0x7c,
-	0x2f, 0x16, 0x85, 0x82, 0x42, 0x39, 0x3d, 0xad, 0x75, 0xed, 0xf2, 0x3d, 0xee, 0x6d, 0x25, 0x27,
-	0x6f, 0xf1, 0xf0, 0x3a, 0x09, 0x9f, 0xfe, 0x1b, 0x3e, 0xbd, 0x85, 0x9f, 0x3c, 0xf9, 0xff, 0x4e,
-	0xf7, 0xc0, 0xf5, 0xeb, 0xaf, 0xad, 0x8b, 0xbe, 0xb7, 0x2e, 0x3a, 0xb6, 0x2e, 0xfa, 0xd5, 0xba,
-	0xe8, 0xcb, 0xc9, 0xb5, 0x8e, 0x27, 0xd7, 0xfa, 0x79, 0x72, 0xad, 0x37, 0xcf, 0x78, 0xaa, 0x92,
-	0x3a, 0xa2, 0xb1, 0xc8, 0x59, 0x05, 0x19, 0xec, 0xc3, 0x42, 0xcd, 0x63, 0x91, 0xe7, 0x75, 0x91,
-	0xaa, 0x86, 0x55, 0xab, 0x8c, 0x7d, 0x62, 0x7f, 0x3f, 0x8a, 0x6a, 0x4a, 0x90, 0xd1, 0x5d, 0x1d,
-	0xfa, 0xea, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x18, 0xde, 0xf4, 0x50, 0x3f, 0x02, 0x00, 0x00,
+	// 228 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0xcc, 0x2f, 0x4a, 0x4c,
+	0xce, 0x49, 0xd5, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0xd4, 0x4f, 0xce, 0x49, 0xcc, 0xcc, 0xd5,
+	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x2a, 0x32, 0xce, 0xd1, 0x83, 0x48, 0xeb, 0x41, 0xa4,
+	0x0d, 0xa5, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1, 0xd2, 0xfa, 0x20, 0x16, 0x44, 0xa5, 0x52, 0x2a,
+	0x17, 0x67, 0x48, 0x6a, 0x71, 0x89, 0x33, 0x48, 0xb3, 0x90, 0x02, 0x17, 0x77, 0x52, 0x4e, 0x7e,
+	0x72, 0xb6, 0x47, 0x6a, 0x66, 0x7a, 0x46, 0x89, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x73, 0x10, 0xb2,
+	0x90, 0x90, 0x0c, 0x17, 0x27, 0xd8, 0x9e, 0x90, 0xca, 0x82, 0x54, 0x09, 0x26, 0x05, 0x46, 0x0d,
+	0xce, 0x20, 0x84, 0x80, 0x90, 0x04, 0x17, 0x7b, 0x72, 0x7e, 0x5e, 0x49, 0x6a, 0x5e, 0x89, 0x04,
+	0x33, 0x58, 0x0e, 0xc6, 0x75, 0xf2, 0x5b, 0xf1, 0x48, 0x8e, 0xf1, 0xc4, 0x23, 0x39, 0xc6, 0x0b,
+	0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86,
+	0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0x0c, 0xd2, 0x33, 0x4b, 0x32, 0x4a, 0x93, 0xf4, 0x92, 0xf3, 0x73,
+	0xf5, 0x8b, 0x52, 0x73, 0x52, 0xcb, 0x12, 0xf3, 0x4a, 0x74, 0x93, 0xf3, 0x73, 0x73, 0x4b, 0xf3,
+	0x32, 0x4b, 0x2a, 0xf5, 0x8b, 0x8c, 0x73, 0xf4, 0x2b, 0xf4, 0xa1, 0xbe, 0x2d, 0xa9, 0x2c, 0x48,
+	0x2d, 0x4e, 0x62, 0x03, 0xbb, 0xde, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x5a, 0x25, 0xd2, 0x79,
+	0x04, 0x01, 0x00, 0x00,
 }
 
-func (this *MsgCreateClaimResponse) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*MsgCreateClaimResponse)
-	if !ok {
-		that2, ok := that.(MsgCreateClaimResponse)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !bytes.Equal(this.Hash, that1.Hash) {
-		return false
-	}
-	return true
-}
 func (this *TestClaim) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -268,163 +139,6 @@ func (this *TestClaim) Equal(that interface{}) bool {
 	}
 	return true
 }
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// MsgClient is the client API for Msg service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	// SubmitEvidence submits an arbitrary Evidence of misbehavior such as equivocation or
-	// counterfactual signing.
-	CreateClaim(ctx context.Context, in *MsgCreateClaim, opts ...grpc.CallOption) (*MsgCreateClaimResponse, error)
-}
-
-type msgClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
-}
-
-func (c *msgClient) CreateClaim(ctx context.Context, in *MsgCreateClaim, opts ...grpc.CallOption) (*MsgCreateClaimResponse, error) {
-	out := new(MsgCreateClaimResponse)
-	err := c.cc.Invoke(ctx, "/r3l.oracle.v1beta1.Msg/CreateClaim", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	// SubmitEvidence submits an arbitrary Evidence of misbehavior such as equivocation or
-	// counterfactual signing.
-	CreateClaim(context.Context, *MsgCreateClaim) (*MsgCreateClaimResponse, error)
-}
-
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
-
-func (*UnimplementedMsgServer) CreateClaim(ctx context.Context, req *MsgCreateClaim) (*MsgCreateClaimResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClaim not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_CreateClaim_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClaim)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateClaim(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/r3l.oracle.v1beta1.Msg/CreateClaim",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClaim(ctx, req.(*MsgCreateClaim))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "r3l.oracle.v1beta1.Msg",
-	HandlerType: (*MsgServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateClaim",
-			Handler:    _Msg_CreateClaim_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "oracle/v1beta/claim.proto",
-}
-
-func (m *MsgCreateClaim) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCreateClaim) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCreateClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Claim != nil {
-		{
-			size, err := m.Claim.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintClaim(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Submitter) > 0 {
-		i -= len(m.Submitter)
-		copy(dAtA[i:], m.Submitter)
-		i = encodeVarintClaim(dAtA, i, uint64(len(m.Submitter)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCreateClaimResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCreateClaimResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCreateClaimResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Hash) > 0 {
-		i -= len(m.Hash)
-		copy(dAtA[i:], m.Hash)
-		i = encodeVarintClaim(dAtA, i, uint64(len(m.Hash)))
-		i--
-		dAtA[i] = 0x22
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *TestClaim) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -478,36 +192,6 @@ func encodeVarintClaim(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgCreateClaim) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Submitter)
-	if l > 0 {
-		n += 1 + l + sovClaim(uint64(l))
-	}
-	if m.Claim != nil {
-		l = m.Claim.Size()
-		n += 1 + l + sovClaim(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgCreateClaimResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Hash)
-	if l > 0 {
-		n += 1 + l + sovClaim(uint64(l))
-	}
-	return n
-}
-
 func (m *TestClaim) Size() (n int) {
 	if m == nil {
 		return 0
@@ -533,214 +217,6 @@ func sovClaim(x uint64) (n int) {
 }
 func sozClaim(x uint64) (n int) {
 	return sovClaim(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowClaim
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaim: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaim: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Submitter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowClaim
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthClaim
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Submitter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Claim", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowClaim
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthClaim
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Claim == nil {
-				m.Claim = &types.Any{}
-			}
-			if err := m.Claim.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipClaim(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCreateClaimResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowClaim
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaimResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaimResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowClaim
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthClaim
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Hash = append(m.Hash[:0], dAtA[iNdEx:postIndex]...)
-			if m.Hash == nil {
-				m.Hash = []byte{}
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipClaim(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthClaim
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *TestClaim) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

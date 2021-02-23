@@ -39,6 +39,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 			k.AddPendingRound(ctx, claimType, roundID)
 		}
 	}
+
+	for _, delegation := range genState.FeederDelegations {
+		k.SetValidatorDelegateAddress(ctx, delegation.MustGetValidator(), delegation.MustGetDelegate())
+	}
 }
 
 // ExportGenesis returns the capability module's exported genesis.
@@ -47,5 +51,13 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	rounds := k.GetAllRounds(ctx)
 	claims := k.GetAllClaims(ctx)
 	pending := k.GetAllPendingRounds(ctx)
-	return types.NewGenesisState(params, rounds, claims, pending)
+
+	delegations := []types.MsgDelegateFeedConsent{}
+	handler := func(del sdk.AccAddress, val sdk.AccAddress) (stop bool) {
+		delegations = append(delegations, *types.NewMsgDelegateFeedConsent(val, del))
+		return
+	}
+	k.IterateDelegateAddresses(ctx, handler)
+
+	return types.NewGenesisState(params, rounds, claims, pending, delegations)
 }

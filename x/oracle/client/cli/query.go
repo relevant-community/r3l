@@ -26,12 +26,14 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 
-	cmd.AddCommand(CmdListClaim())
+	cmd.AddCommand(CmdAllClaims())
 	cmd.AddCommand(CmdClaim())
 	cmd.AddCommand(CmdParams())
 	cmd.AddCommand(CmdRound())
 	cmd.AddCommand(CmdPendingRounds())
 	cmd.AddCommand(CmdAllRounds())
+	cmd.AddCommand(CmdValidatorAddress())
+	cmd.AddCommand(CmdDelegeateAddress())
 
 	return cmd
 }
@@ -169,4 +171,56 @@ func CmdAllRounds() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
+}
+
+// CmdDelegeateAddress query delegate address from the chain given validators address
+func CmdDelegeateAddress() *cobra.Command {
+	return &cobra.Command{
+		Use:     "delegate-address [validator-address]",
+		Aliases: []string{"del"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query delegate address from the chain given validators address",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryDelegeateAddressRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryDelegeateAddress(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+}
+
+// CmdValidatorAddress query validator address from the chain given the address that validator delegated to
+func CmdValidatorAddress() *cobra.Command {
+	return &cobra.Command{
+		Use:     "validator-address [delegate-address]",
+		Aliases: []string{"val"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query validator address from the chain given the address that validator delegated to",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryValidatorAddressRequest{Delegate: args[0]}
+
+			res, err := queryClient.QueryValidatorAddress(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
 }

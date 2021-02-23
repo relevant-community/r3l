@@ -14,13 +14,18 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*exported.Claim)(nil), nil)
 	cdc.RegisterConcrete(&MsgCreateClaim{}, "oracle/MsgCreateClaim", nil)
+	cdc.RegisterConcrete(&MsgDelegateFeedConsent{}, "oracle/MsgDelegateFeedConsent", nil)
 	cdc.RegisterConcrete(&TestClaim{}, "oracle/TestClaim", nil)
 }
 
 // RegisterInterfaces registers interfaces
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	// this line is used by starport scaffolding # 3
-	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgCreateClaim{})
+	registry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&MsgCreateClaim{},
+		&MsgDelegateFeedConsent{},
+	)
 	registry.RegisterInterface(
 		"r3l.oracle.v1beta1.Claim",
 		(*exported.Claim)(nil),

@@ -1,0 +1,46 @@
+syntax = "proto3";
+package r3l.oracle.v1beta1;
+
+option go_package            = "github.com/relevant-community/r3l/x/oracle/types";
+option (gogoproto.equal_all) = true;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
+
+// Msg defines the clim Msg service.
+service Msg {  
+  // CreateClaim submits an arbitrary oracle Claim 
+  rpc CreateClaim(MsgCreateClaim) returns (MsgCreateClaimResponse);
+
+  // DelegateFeedConsent delegates oracle claim submission permission from the validator to
+  // an arbitrary address
+  rpc DelegateFeedConsent (MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+}
+
+
+// MsgCreateClaim represents a message that supports submitting an arbitrary
+// oracle Claim.
+message MsgCreateClaim {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string              submitter = 1;
+  google.protobuf.Any claim  = 2 [(cosmos_proto.accepts_interface) = "Claim"];
+}
+
+// MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type.
+message MsgCreateClaimResponse {
+  // hash defines the hash of the evidence.
+  bytes hash = 4;
+}
+
+// MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+// to another address, must be signed by an active validator
+message MsgDelegateFeedConsent {
+  string delegate  = 1;
+  string validator = 2;
+}
+
+// MsgDelegateFeedConsentResponse delegation response
+message MsgDelegateFeedConsentResponse {}

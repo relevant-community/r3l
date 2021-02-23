@@ -44,6 +44,13 @@ service Query {
   rpc Claim(QueryClaimRequest) returns (QueryClaimResponse){
     option (google.api.http).get = "/r3l/oracle/v1beta1/claim/{claim_hash}";
   };
+
+  rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {
+    option (google.api.http).get = "/r3l/oracle/v1beta1/delegate/{validator}";
+  }
+  rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
+    option (google.api.http).get = "/r3l/oracle/v1beta1/validator/{delegate}";
+  }
 }
 
 // QueryRoundResponse is the request type for the Query/Params RPC method
@@ -118,4 +125,18 @@ message QueryAllClaimsRequest {
 message QueryAllClaimsResponse {
 	repeated google.protobuf.Any claims = 1;
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryValidatorAddressRequest {
+  string delegate = 1;
+}
+message QueryValidatorAddressResponse {
+  string validator = 1;
+}
+
+message QueryDelegeateAddressRequest {
+  string validator = 1;
+}
+message QueryDelegeateAddressResponse {
+  string delegate = 2;
 }

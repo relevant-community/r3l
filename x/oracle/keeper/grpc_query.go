@@ -163,3 +163,53 @@ func (k Keeper) Round(c context.Context, req *types.QueryRoundRequest) (*types.Q
 	round := k.GetRound(sdkCtx, req.ClaimType, req.RoundId)
 	return &types.QueryRoundResponse{Round: *round}, nil
 }
+
+// QueryDelegeateAddress implements QueryServer
+func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegeateAddressRequest) (*types.QueryDelegeateAddressResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	val, err := sdk.AccAddressFromBech32(req.Validator)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	delegateAddr := k.GetDelegateAddressFromValidator(ctx, val)
+	if delegateAddr == nil {
+		return nil, status.Errorf(
+			codes.NotFound, "delegator address for validator %s", req.Validator,
+		)
+	}
+
+	return &types.QueryDelegeateAddressResponse{
+		Delegate: delegateAddr.String(),
+	}, nil
+}
+
+// QueryValidatorAddress implements QueryServer
+func (k Keeper) QueryValidatorAddress(c context.Context, req *types.QueryValidatorAddressRequest) (*types.QueryValidatorAddressResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	del, err := sdk.AccAddressFromBech32(req.Delegate)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, del)
+	if validatorAddr == nil {
+		return nil, status.Errorf(
+			codes.NotFound, "delegator address for delegate %s", req.Delegate,
+		)
+	}
+
+	return &types.QueryValidatorAddressResponse{
+		Validator: validatorAddr.String(),
+	}, nil
+}
