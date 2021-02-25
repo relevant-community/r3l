@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/relevant-community/r3l/x/r3l/types"
-	"github.com/spf13/cobra"
 )
 
 type queryResult struct {
@@ -14,8 +14,10 @@ type queryResult struct {
 	rankSources []*types.MsgRankSource
 }
 
-func queryData(cmd *cobra.Command, clientCtx client.Context) (res queryResult, err error) {
-	pageReq, err := client.ReadPageRequest(cmd.Flags())
+func queryData(clientCtx client.Context) (res queryResult, err error) {
+
+	// TODO do we need to iterate through pages for large data sets?
+	pageReq := &query.PageRequest{}
 	res = queryResult{}
 
 	if err != nil {

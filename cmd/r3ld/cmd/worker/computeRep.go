@@ -1,22 +1,18 @@
 package worker
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"fmt"
 	"math"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/relevant-community/r3l/x/r3l/types"
 
-	"github.com/spf13/cobra"
-
 	rep "github.com/relevant-community/reputation/non-deterministic"
 )
 
 // ComputeReputation is the reputation worker
-func ComputeReputation(cmd *cobra.Command, clientCtx client.Context) (*types.Scores, error) {
-	queryData, err := queryData(cmd, clientCtx)
+func ComputeReputation(clientCtx client.Context) (*types.Scores, error) {
+	queryData, err := queryData(clientCtx)
 	if err != nil {
 		fmt.Println("Error fetching data", err)
 		return nil, err
@@ -68,10 +64,4 @@ func toFixed(n float64) int64 {
 
 func toFloat(n int64) float64 {
 	return float64(n) / math.Pow(10, float64(precision))
-}
-
-func genrandstr(s int) string {
-	b := make([]byte, s)
-	_, _ = rand.Read(b)
-	return base64.URLEncoding.EncodeToString(b)
 }
