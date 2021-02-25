@@ -13,12 +13,24 @@ var (
 	KeyVoteThreshold = []byte("voteThreshold")
 )
 
+// Default params for testing
+var (
+	TestClaimType               = "test"
+	TestPrevoteClaimType        = "prevoteTest"
+	TestVotePeriod       uint64 = 3
+)
+
 // Default parameter values
 var (
 	DefaultVoteThreshold = sdk.NewDecWithPrec(50, 2) // 50%
 	DefaultClaimParams   = map[string](ClaimParams){
-		"test": {
-			ClaimType: "test",
+		TestClaimType: {
+			ClaimType: TestClaimType,
+		},
+		TestPrevoteClaimType: {
+			ClaimType:  TestPrevoteClaimType,
+			Prevote:    true,
+			VotePeriod: TestVotePeriod,
 		},
 	}
 )

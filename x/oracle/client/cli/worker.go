@@ -42,16 +42,11 @@ var instance *Worker
 
 // InitializeWorker intializes the singleton instance and sets the worker process
 // This method should be called from the app's cmd/root.go file
-// TODO add event handler?
 func InitializeWorker(blockHandler BlockHandler, txHandler TxHandler) *Worker {
-	// We don't really need to do this, but this is a standard singleton pattern
-	// to protect from creation of multiple instances
-	once.Do(func() {
-		instance = &Worker{
-			handleBlock: blockHandler,
-			handleTx:    txHandler,
-		}
-	})
+	instance = &Worker{
+		handleBlock: blockHandler,
+		handleTx:    txHandler,
+	}
 	return instance
 }
 
@@ -66,7 +61,7 @@ func StartWorkerCmd() *cobra.Command {
 				return fmt.Errorf("Worker process is not intialized, did you forget to initialize the worker and set handlers in root.go?")
 			}
 
-			// stop after stopAtHeight (used for testing)
+			// the process after stopAtHeight (used for testing)
 			stopAtHeight := int64(0)
 			var err error
 			if len(args) > 0 {
@@ -95,7 +90,6 @@ func StartWorkerCmd() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().StringP(tmcli.OutputFlag, "o", "text", "Output format (text|json)")
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 	return cmd
 }
 

@@ -89,8 +89,6 @@ func (s *IntegrationTestSuite) TestGRPCQueries() {
 			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
 			s.Require().NoError(err)
 
-			fmt.Print(string(resp))
-
 			err = val.ClientCtx.JSONMarshaler.UnmarshalJSON(resp, tc.respType)
 
 			if tc.expErr {
