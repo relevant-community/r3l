@@ -102,7 +102,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
 	// Initialize oracle worker process
-	oraclecli.InitializeWorker(worker.HandleBlock)
+	oraclecli.InitializeWorker(worker.HandleBlock, worker.HandleTx)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(

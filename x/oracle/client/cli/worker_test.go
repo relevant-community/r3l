@@ -13,9 +13,14 @@ import (
 	"github.com/relevant-community/r3l/x/oracle/client/cli"
 	"github.com/relevant-community/r3l/x/oracle/types"
 	"github.com/spf13/cobra"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
-func blockHandler(cmd *cobra.Command, blockHeight int64) error {
+func txHandler(cmd *cobra.Command, txEvent ctypes.ResultEvent) error {
+	return nil
+}
+
+func blockHandler(cmd *cobra.Command, blockEvent ctypes.ResultEvent) error {
 	testClaim := types.NewTestClaim(1, "test", "test")
 	clientCtx, err := client.GetClientTxContext(cmd)
 	if err != nil {
@@ -45,7 +50,7 @@ func blockHandler(cmd *cobra.Command, blockHeight int64) error {
 func (s *IntegrationTestSuite) TestWorkerCmd() {
 	val := s.network.Validators[0]
 
-	cli.InitializeWorker(blockHandler)
+	cli.InitializeWorker(blockHandler, txHandler)
 
 	testCases := map[string]struct {
 		args         []string
@@ -55,7 +60,7 @@ func (s *IntegrationTestSuite) TestWorkerCmd() {
 	}{
 		"run-worker": {
 			[]string{
-				"runOnce",
+				"1",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),

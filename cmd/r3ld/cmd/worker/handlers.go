@@ -7,12 +7,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/relevant-community/r3l/x/oracle/client/cli"
 	"github.com/relevant-community/r3l/x/oracle/types"
+	rpctypes "github.com/tendermint/tendermint/rpc/core/types"
+	tendermint "github.com/tendermint/tendermint/types"
 
 	"github.com/spf13/cobra"
 )
 
-// HandleBlock is our custom worker code
-func HandleBlock(cmd *cobra.Command, blockHeight int64) error {
+// HandleTx is our custom tx handler
+func HandleTx(cmd *cobra.Command, txEvent rpctypes.ResultEvent) error {
+	return nil
+}
+
+// HandleBlock is our custom block handler
+func HandleBlock(cmd *cobra.Command, blockEvent rpctypes.ResultEvent) error {
+	blockHeight :=
+		blockEvent.Data.(tendermint.EventDataNewBlock).Block.Header.Height
+
 	clientCtx, err := client.GetClientTxContext(cmd)
 	if err != nil {
 		return err
