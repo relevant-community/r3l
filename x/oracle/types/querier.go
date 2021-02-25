@@ -5,15 +5,6 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-// const (
-// 	QueryAllClaims     = "all-claims"
-// 	QueryClaim         = "claim"
-// 	QueryParameters    = "parameters"
-// 	QueryRound         = "round"
-// 	QueryAllRounds     = "all-rounds"
-// 	QueryPenidngRounds = "pending-rounds"
-// )
-
 // QueryAllClaimsParams querey params struct
 type QueryAllClaimsParams struct {
 	Page  int `json:"page" yaml:"page"`

@@ -1,20 +1,27 @@
 package keeper
 
 import (
+	"bytes"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/relevant-community/r3l/x/oracle/exported"
 	"github.com/relevant-community/r3l/x/oracle/types"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-// CastVote casts a vote for a given claim.
-func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.ValAddress) {
+////////////////////
+/// VOTE
+////////////////////
+
+// CreateVote casts a vote for a given claim.
+func (k Keeper) CreateVote(ctx sdk.Context, claim exported.Claim, validator sdk.ValAddress) {
 	k.CreateClaim(ctx, claim)
 	roundID := claim.GetRoundID()
 	claimType := claim.Type()
 	vote := types.NewVote(roundID, claim, validator, claimType)
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RoundKey)
 
 	var votes types.Round
 	bz := store.Get(types.RoundPrefix(claimType, roundID))
@@ -35,10 +42,13 @@ func (k Keeper) CastVote(ctx sdk.Context, claim exported.Claim, validator sdk.Va
 
 // DeleteVotesForRound deletes all votes and claims for a given round and claimType
 func (k Keeper) DeleteVotesForRound(ctx sdk.Context, claimType string, roundID uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RoundKey)
 	roundKey := types.GetRoundKey(claimType, roundID)
 
 	round := k.GetRound(ctx, claimType, roundID)
+	if round == nil {
+		return
+	}
 
 	for _, vote := range round.Votes {
 		k.DeleteClaim(ctx, []byte(vote.ClaimHash))
@@ -98,4 +108,41 @@ func (k Keeper) VotePassedThreshold(ctx sdk.Context, roundResult *types.RoundRes
 	thresholdVotes := voteThreshold.MulInt64(totalBondedPower).RoundInt()
 	votePower := sdk.NewInt(roundResult.VotePower)
 	return !votePower.IsZero() && votePower.GT(thresholdVotes), totalBondedPower
+}
+
+////////////////////
+/// PRE-VOTE
+////////////////////
+
+// CreatePrevote sets the prevote for a given validator
+func (k Keeper) CreatePrevote(ctx sdk.Context, hash tmbytes.HexBytes) {
+	ctx.KVStore(k.storeKey).Set(types.GetClaimPrevoteKey(hash), hash)
+}
+
+// GetPrevote gets the prevote for a given validator
+func (k Keeper) GetPrevote(ctx sdk.Context, hash tmbytes.HexBytes) tmbytes.HexBytes {
+	return ctx.KVStore(k.storeKey).Get(hash)
+}
+
+// DeletePrevote deletes the prevote for a given validator
+func (k Keeper) DeletePrevote(ctx sdk.Context, hash tmbytes.HexBytes) {
+	ctx.KVStore(k.storeKey).Delete(types.GetClaimPrevoteKey(hash))
+}
+
+// HasPrevote gets the prevote for a given hash
+func (k Keeper) HasPrevote(ctx sdk.Context, hash tmbytes.HexBytes) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetClaimPrevoteKey(hash))
+}
+
+// IteratePrevotes iterates over all prevotes in the store
+func (k Keeper) IteratePrevotes(ctx sdk.Context, handler func(hash tmbytes.HexBytes) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.PrevoteKey)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		hash := bytes.TrimPrefix(iter.Key(), types.PrevoteKey)
+		if handler(hash) {
+			break
+		}
+	}
 }

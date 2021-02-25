@@ -12,14 +12,14 @@ import (
 
 // CreateClaim sets Claim by hash in the module's KVStore.
 func (k Keeper) CreateClaim(ctx sdk.Context, claim exported.Claim) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VoteKey)
 	store.Set(claim.Hash(), k.MustMarshalClaim(claim))
 }
 
 // GetClaim retrieves Claim by hash if it exists. If no Claim exists for
 // the given hash, (nil, false) is returned.
 func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) exported.Claim {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VoteKey)
 
 	bz := store.Get(hash)
 	if len(bz) == 0 {
@@ -32,7 +32,7 @@ func (k Keeper) GetClaim(ctx sdk.Context, hash tmbytes.HexBytes) exported.Claim 
 // GetAllClaims returns all claims
 func (k Keeper) GetAllClaims(ctx sdk.Context) (msgs []exported.Claim) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.ClaimKey))
+	iterator := sdk.KVStorePrefixIterator(store, types.VoteKey)
 
 	defer iterator.Close()
 
@@ -46,7 +46,7 @@ func (k Keeper) GetAllClaims(ctx sdk.Context) (msgs []exported.Claim) {
 
 // DeleteClaim deletes claim by hash
 func (k Keeper) DeleteClaim(ctx sdk.Context, hash tmbytes.HexBytes) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VoteKey)
 	store.Delete(hash)
 }
 

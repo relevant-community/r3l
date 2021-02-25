@@ -21,8 +21,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDelegateFeedConsent:
 			res, err := msgServer.DelegateFeedConsent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgCreateClaim:
-			res, err := msgServer.CreateClaim(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgPrevote:
+			res, err := msgServer.Prevote(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgVote:
+			res, err := msgServer.Vote(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)

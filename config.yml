@@ -27,9 +27,10 @@ genesis:
     oracle:
       params:
         claim_params:
-          - vote_period: 3
+          ScoreClaim:
+            vote_period: 3
             claim_type: 'ScoreClaim'
-            prevote: false
+            prevote: true
 
     r3l:
       rankSource:

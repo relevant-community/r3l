@@ -15,21 +15,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Run(cmd *cobra.Command, clientCtx client.Context) error {
+func blockHandler(cmd *cobra.Command, blockHeight int64) error {
 	testClaim := types.NewTestClaim(1, "test", "test")
+	clientCtx, err := client.GetClientTxContext(cmd)
+	if err != nil {
+		return err
+	}
 
 	// then create the claim message and submit it to the oracle
-	submitClaimMsg, err := types.NewMsgCreateClaim(clientCtx.GetFromAddress(), testClaim)
+	voteMsg, err := types.NewMsgVote(clientCtx.GetFromAddress(), testClaim, "")
 	if err != nil {
 		fmt.Println("Error creating claim", err)
 		return err
 	}
 
-	if err := submitClaimMsg.ValidateBasic(); err != nil {
+	if err := voteMsg.ValidateBasic(); err != nil {
 		return err
 	}
 
-	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), submitClaimMsg)
+	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), voteMsg)
 
 	if err != nil {
 		fmt.Println("TX ERROR", err)
@@ -41,7 +45,7 @@ func Run(cmd *cobra.Command, clientCtx client.Context) error {
 func (s *IntegrationTestSuite) TestWorkerCmd() {
 	val := s.network.Validators[0]
 
-	cli.InitializeWorker(Run)
+	cli.InitializeWorker(blockHandler)
 
 	testCases := map[string]struct {
 		args         []string

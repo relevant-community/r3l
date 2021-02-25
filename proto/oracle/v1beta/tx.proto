@@ -10,8 +10,11 @@ import "cosmos_proto/cosmos.proto";
 
 // Msg defines the clim Msg service.
 service Msg {  
-  // CreateClaim submits an arbitrary oracle Claim 
-  rpc CreateClaim(MsgCreateClaim) returns (MsgCreateClaimResponse);
+  // Vote submits an arbitrary oracle Claim 
+  rpc Vote(MsgVote) returns (MsgVoteResponse);
+
+  // Prevote submits a prevote for a Claim 
+  rpc Prevote (MsgPrevote)   returns (MsgPrevoteResponse);
 
   // DelegateFeedConsent delegates oracle claim submission permission from the validator to
   // an arbitrary address
@@ -19,21 +22,33 @@ service Msg {
 }
 
 
-// MsgCreateClaim represents a message that supports submitting an arbitrary
-// oracle Claim.
-message MsgCreateClaim {
+// MsgVote represents a message that supports submitting a vote for 
+// an arbitrary oracle Claim.
+message MsgVote {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string              submitter = 1;
+  string              signer = 1;
   google.protobuf.Any claim  = 2 [(cosmos_proto.accepts_interface) = "Claim"];
+  string              salt = 3;
 }
 
-// MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type.
-message MsgCreateClaimResponse {
+// MsgVoteResponse defines the Msg/SubmitEvidence response type.
+message MsgVoteResponse {
   // hash defines the hash of the evidence.
   bytes hash = 4;
 }
+
+// MsgPrevote - sdk.Msg for prevoting on an array of oracle claim types.
+// The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
+// SHA256("{salt}:{data_cannonical_json}:{voter}")
+message MsgPrevote {
+  bytes  hash = 1;
+  string signer = 2;
+}
+
+message MsgPrevoteResponse {}
+
 
 // MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
 // to another address, must be signed by an active validator

@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testMsgCreateClaim(t *testing.T, c exported.Claim, s sdk.AccAddress) exported.MsgCreateClaimI {
-	msg, err := types.NewMsgCreateClaim(s, c)
+func testMsgCreateClaim(t *testing.T, c exported.Claim, s sdk.AccAddress) exported.MsgVoteI {
+	msg, err := types.NewMsgVote(s, c, "")
 	require.NoError(t, err)
 	return msg
 }
@@ -45,7 +45,7 @@ func TestMsgCreateClaim(t *testing.T) {
 
 	for i, tc := range testCases {
 		require.Equal(t, tc.msg.Route(), types.RouterKey, "unexpected result for tc #%d", i)
-		require.Equal(t, tc.msg.Type(), types.TypeMsgCreateClaim, "unexpected result for tc #%d", i)
+		require.Equal(t, tc.msg.Type(), types.TypeMsgVote, "unexpected result for tc #%d", i)
 		require.Equal(t, tc.expectErr, tc.msg.ValidateBasic() != nil, "unexpected result for tc #%d", i)
 
 		if !tc.expectErr {

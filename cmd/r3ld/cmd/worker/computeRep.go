@@ -1,12 +1,12 @@
 package worker
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"math"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	oracle "github.com/relevant-community/r3l/x/oracle/types"
 	"github.com/relevant-community/r3l/x/r3l/types"
 
 	"github.com/spf13/cobra"
@@ -15,33 +15,17 @@ import (
 )
 
 // ComputeReputation is the reputation worker
-func ComputeReputation(cmd *cobra.Command, clientCtx client.Context) error {
+func ComputeReputation(cmd *cobra.Command, clientCtx client.Context) (*types.Scores, error) {
 	queryData, err := queryData(cmd, clientCtx)
 	if err != nil {
 		fmt.Println("Error fetching data", err)
-		return err
+		return nil, err
 	}
 
 	updatedScores := computeRank(queryData.votes, queryData.scores, queryData.rankSources)
+	scoresMsg := types.NewScores(clientCtx.GetFromAddress(), clientCtx.Height, updatedScores)
 
-	// We use BlockHeight - 1 to reflect that the scores were based on data from that block
-	// Construct the scoresMsg me	ssage first
-	scoresMsg := types.NewScores(clientCtx.GetFromAddress(), clientCtx.Height-1, updatedScores)
-
-	// then create the claim message and submit it to the oracle
-	submitClaimMsg, err := oracle.NewMsgCreateClaim(clientCtx.GetFromAddress(), scoresMsg)
-	if err := submitClaimMsg.ValidateBasic(); err != nil {
-		return err
-	}
-
-	err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), submitClaimMsg)
-
-	// TODO retry if the TX fails
-	if err != nil {
-		fmt.Println("TX ERROR", err)
-		return err
-	}
-	return nil
+	return scoresMsg, nil
 }
 
 // computeRank runs the pagerank algorithm
@@ -84,4 +68,10 @@ func toFixed(n float64) int64 {
 
 func toFloat(n int64) float64 {
 	return float64(n) / math.Pow(10, float64(precision))
+}
+
+func genrandstr(s int) string {
+	b := make([]byte, s)
+	_, _ = rand.Read(b)
+	return base64.URLEncoding.EncodeToString(b)
 }

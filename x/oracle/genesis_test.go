@@ -46,8 +46,8 @@ func (suite *GenesisTestSuite) TestGenesis() {
 	claimType := "test"
 	round := []types.Round{}
 	params := types.DefaultParams()
-	params.ClaimParams = []types.ClaimParams{
-		{
+	params.ClaimParams = map[string](types.ClaimParams){
+		claimType: {
 			ClaimType: claimType,
 		},
 	}
@@ -148,7 +148,7 @@ func (suite *GenesisTestSuite) TestImportExportGenesis() {
 		{
 			"success",
 			func() {
-				suite.k.CastVote(suite.ctx, &types.TestClaim{
+				suite.k.CreateVote(suite.ctx, &types.TestClaim{
 					BlockHeight: roundID,
 					Content:     "test",
 					ClaimType:   claimType,

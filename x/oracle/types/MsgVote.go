@@ -12,17 +12,17 @@ import (
 
 // Message types for the oracle module
 const (
-	TypeMsgCreateClaim = "create_claim"
+	TypeMsgVote = "create_claim"
 )
 
 var (
-	_ sdk.Msg                       = &MsgCreateClaim{}
-	_ types.UnpackInterfacesMessage = MsgCreateClaim{}
-	_ exported.MsgCreateClaimI      = &MsgCreateClaim{}
+	_ sdk.Msg                       = &MsgVote{}
+	_ types.UnpackInterfacesMessage = MsgVote{}
+	_ exported.MsgVoteI             = &MsgVote{}
 )
 
-// NewMsgCreateClaim returns a new MsgCreateClaim with a signer/submitter.
-func NewMsgCreateClaim(s sdk.AccAddress, claim exported.Claim) (*MsgCreateClaim, error) {
+// NewMsgVote returns a new MsgVote with a signer/submitter.
+func NewMsgVote(s sdk.AccAddress, claim exported.Claim, salt string) (*MsgVote, error) {
 	msg, ok := claim.(proto.Message)
 	if !ok {
 		return nil, fmt.Errorf("cannot proto marshal %T", claim)
@@ -31,22 +31,22 @@ func NewMsgCreateClaim(s sdk.AccAddress, claim exported.Claim) (*MsgCreateClaim,
 	if err != nil {
 		return nil, err
 	}
-	return &MsgCreateClaim{Submitter: s.String(), Claim: any}, nil
+	return &MsgVote{Signer: s.String(), Claim: any, Salt: salt}, nil
 }
 
 // Route get msg route
-func (msg *MsgCreateClaim) Route() string {
+func (msg *MsgVote) Route() string {
 	return RouterKey
 }
 
 // Type get msg type
-func (msg *MsgCreateClaim) Type() string {
-	return TypeMsgCreateClaim
+func (msg *MsgVote) Type() string {
+	return TypeMsgVote
 }
 
 // GetSigners get msg signers
-func (msg *MsgCreateClaim) GetSigners() []sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
+func (msg *MsgVote) GetSigners() []sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil
 	}
@@ -55,14 +55,14 @@ func (msg *MsgCreateClaim) GetSigners() []sdk.AccAddress {
 }
 
 // GetSignBytes get msg get getsingbytes
-func (msg *MsgCreateClaim) GetSignBytes() []byte {
+func (msg *MsgVote) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // ValidateBasic validation
-func (msg *MsgCreateClaim) ValidateBasic() error {
-	if msg.Submitter == "" {
+func (msg *MsgVote) ValidateBasic() error {
+	if msg.Signer == "" {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "creator can't be empty")
 	}
 	claim := msg.GetClaim()
@@ -77,7 +77,7 @@ func (msg *MsgCreateClaim) ValidateBasic() error {
 }
 
 // GetClaim get the claim
-func (msg MsgCreateClaim) GetClaim() exported.Claim {
+func (msg MsgVote) GetClaim() exported.Claim {
 	claim, ok := msg.Claim.GetCachedValue().(exported.Claim)
 	if !ok {
 		return nil
@@ -85,18 +85,18 @@ func (msg MsgCreateClaim) GetClaim() exported.Claim {
 	return claim
 }
 
-// GetSubmitter get the submitter
-func (msg MsgCreateClaim) GetSubmitter() sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
+// GetSigner get the submitter
+func (msg MsgVote) GetSigner() sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil
 	}
 	return accAddr
 }
 
-// MustGetSubmitter returns submitter
-func (msg MsgCreateClaim) MustGetSubmitter() sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(msg.Submitter)
+// MustGetSigner returns submitter
+func (msg MsgVote) MustGetSigner() sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		panic(err)
 	}
@@ -104,7 +104,7 @@ func (msg MsgCreateClaim) MustGetSubmitter() sdk.AccAddress {
 }
 
 // UnpackInterfaces unpack
-func (msg MsgCreateClaim) UnpackInterfaces(ctx types.AnyUnpacker) error {
+func (msg MsgVote) UnpackInterfaces(ctx types.AnyUnpacker) error {
 	var claim exported.Claim
 	return ctx.UnpackAny(msg.Claim, &claim)
 }

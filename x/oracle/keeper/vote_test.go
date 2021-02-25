@@ -13,7 +13,7 @@ func (suite *KeeperTestSuite) TestCastVote() {
 	val0 := suite.validators[0]
 	val1 := suite.validators[1]
 
-	suite.k.CastVote(ctx, claim, val0)
+	suite.k.CreateVote(ctx, claim, val0)
 
 	savedClaim := suite.k.GetClaim(ctx, claim.Hash())
 	suite.NotNil(savedClaim)
@@ -38,7 +38,7 @@ func (suite *KeeperTestSuite) TestCastVote() {
 	suite.Equal(vote.RoundId, roundID)
 
 	// Add second vote
-	suite.k.CastVote(ctx, claim, val1)
+	suite.k.CreateVote(ctx, claim, val1)
 	round = suite.k.GetRound(ctx, claimType, roundID)
 	suite.NotNil(round)
 	suite.Equal(len(round.Votes), 2)
@@ -68,14 +68,14 @@ func (suite *KeeperTestSuite) TestVoteTally() {
 	val0 := suite.validators[0]
 	val1 := suite.validators[1]
 
-	suite.k.CastVote(ctx, claim, val0)
+	suite.k.CreateVote(ctx, claim, val0)
 
 	// Haven't reached threshold
 	roundResult := suite.k.TallyVotes(ctx, claimType, roundID)
 	suite.Nil(roundResult)
 
 	// Haven't reached threshold (50%)
-	suite.k.CastVote(ctx, claim, val1)
+	suite.k.CreateVote(ctx, claim, val1)
 	roundResult = suite.k.TallyVotes(ctx, claimType, roundID)
 	suite.NotNil(roundResult)
 

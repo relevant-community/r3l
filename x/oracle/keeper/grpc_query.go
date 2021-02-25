@@ -73,7 +73,7 @@ func (k Keeper) AllClaims(c context.Context, req *types.QueryAllClaimsRequest) (
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimStore := prefix.NewStore(store, types.KeyPrefix(types.ClaimKey))
+	claimStore := prefix.NewStore(store, types.VoteKey)
 
 	pageRes, err := query.Paginate(claimStore, req.Pagination, func(key []byte, value []byte) error {
 		result, err := k.UnmarshalClaim(value)
@@ -110,7 +110,7 @@ func (k Keeper) AllRounds(c context.Context, req *types.QueryAllRoundsRequest) (
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	roundStore := prefix.NewStore(store, types.KeyPrefix(types.RoundKey))
+	roundStore := prefix.NewStore(store, types.RoundKey)
 
 	pageRes, err := query.Paginate(roundStore, req.Pagination, func(key []byte, value []byte) error {
 		var round types.Round

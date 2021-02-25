@@ -47,12 +47,13 @@ func (k Keeper) UpdateScores(ctx sdk.Context) {
 		claimHash := claimResult.ClaimHash
 
 		scores, ok := k.oracleKeeper.GetClaim(ctx, claimHash).(*types.Scores)
+
 		if ok {
 			k.SetScores(ctx, scores)
 		}
 		// TODO delete the earlier rounds also
-		// k.oracleKeeper.DeletePendingRound(ctx, claimType, roundID)
-		// k.oracleKeeper.DeleteVotesForRound(ctx, claimType, roundID)
+		k.oracleKeeper.DeletePendingRound(ctx, claimType, roundID)
+		k.oracleKeeper.DeleteVotesForRound(ctx, claimType, roundID)
 
 		return
 	}

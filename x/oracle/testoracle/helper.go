@@ -17,8 +17,8 @@ import (
 // AddClaimType Registers claimType as an orcale params
 func AddClaimType(ctx sdk.Context, k keeper.Keeper, claimType string) {
 	params := types.DefaultParams()
-	params.ClaimParams = []types.ClaimParams{
-		{
+	params.ClaimParams = map[string](types.ClaimParams){
+		claimType: {
 			ClaimType: claimType,
 		},
 	}

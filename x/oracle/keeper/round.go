@@ -10,14 +10,14 @@ import (
 
 // CreateRound creates a Round (used in genesis file)
 func (k Keeper) CreateRound(ctx sdk.Context, round types.Round) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RoundKey)
 	store.Set(types.RoundPrefix(round.Type, round.RoundId), k.cdc.MustMarshalBinaryBare(&round))
 }
 
 // GetRound retrieves a Round that contains all Votes for a claimType and roundID
 func (k Keeper) GetRound(ctx sdk.Context, claimType string, roundID uint64) *types.Round {
 	roundKey := types.GetRoundKey(claimType, roundID)
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RoundKey)
 	var votes types.Round
 	bz := store.Get(types.KeyPrefix(roundKey))
 	if len(bz) == 0 {
@@ -30,7 +30,7 @@ func (k Keeper) GetRound(ctx sdk.Context, claimType string, roundID uint64) *typ
 // GetAllRounds retrieves all the Rounds (used in genesis)
 func (k Keeper) GetAllRounds(ctx sdk.Context) (rounds []types.Round) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.RoundKey))
+	iterator := sdk.KVStorePrefixIterator(store, types.RoundKey)
 	defer iterator.Close()
 
 	rounds = []types.Round{}
@@ -46,14 +46,14 @@ func (k Keeper) GetAllRounds(ctx sdk.Context) (rounds []types.Round) {
 
 // AddPendingRound adds the roundId to the pending que
 func (k Keeper) AddPendingRound(ctx sdk.Context, claimType string, roundID uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PendingRoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.PendingRoundKey)
 	bz := []byte(strconv.FormatUint(roundID, 10))
 	store.Set(types.RoundPrefix(claimType, roundID), bz)
 }
 
 // GetPendingRounds returns an array of pending rounds for a given claimType
 func (k Keeper) GetPendingRounds(ctx sdk.Context, claimType string) (rounds []uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PendingRoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.PendingRoundKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(claimType))
 
 	defer iterator.Close()
@@ -72,7 +72,7 @@ func (k Keeper) GetPendingRounds(ctx sdk.Context, claimType string) (rounds []ui
 // GetAllPendingRounds returns all pending rounds
 func (k Keeper) GetAllPendingRounds(ctx sdk.Context) (allPendingRounds map[string]([]uint64)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.PendingRoundKey))
+	iterator := sdk.KVStorePrefixIterator(store, types.PendingRoundKey)
 
 	defer iterator.Close()
 	params := k.GetParams(ctx)
@@ -89,6 +89,13 @@ func (k Keeper) GetAllPendingRounds(ctx sdk.Context) (allPendingRounds map[strin
 // DeletePendingRound deletes the roundKey from the store
 func (k Keeper) DeletePendingRound(ctx sdk.Context, claimType string, roundID uint64) {
 	roundKey := types.GetRoundKey(claimType, roundID)
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PendingRoundKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.PendingRoundKey)
 	store.Delete(types.KeyPrefix(roundKey))
+}
+
+// GetCurrentRound returns the current vote round
+func (k Keeper) GetCurrentRound(ctx sdk.Context, claimType string) uint64 {
+	claimParams := k.ClaimParamsForType(ctx, claimType)
+	block := ctx.BlockHeight()
+	return uint64(block) - uint64(block)%claimParams.VotePeriod
 }

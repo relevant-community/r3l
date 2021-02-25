@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testMsgSubmitClaim(r *require.Assertions, claim exported.Claim, sender sdk.AccAddress) exported.MsgCreateClaimI {
-	msg, err := types.NewMsgCreateClaim(sender, claim)
+func testMsgSubmitClaim(r *require.Assertions, claim exported.Claim, sender sdk.AccAddress) exported.MsgVoteI {
+	msg, err := types.NewMsgVote(sender, claim, "")
 	r.NoError(err)
 	return msg
 }
@@ -61,9 +61,9 @@ func (suite *KeeperTestSuite) TestMsgSubmitClaim() {
 			suite.Require().NoError(err, "unexpected error; tc #%d", i)
 			suite.Require().NotNil(res, "expected non-nil result; tc #%d", i)
 
-			msg := tc.msg.(exported.MsgCreateClaimI)
+			msg := tc.msg.(exported.MsgVoteI)
 
-			var resultData types.MsgCreateClaimResponse
+			var resultData types.MsgVoteResponse
 			suite.app.AppCodec().UnmarshalBinaryBare(res.Data, &resultData)
 			suite.Require().Equal(msg.GetClaim().Hash().Bytes(), resultData.Hash, "invalid hash; tc #%d", i)
 		}

@@ -31,25 +31,26 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateClaim represents a message that supports submitting an arbitrary
-// oracle Claim.
-type MsgCreateClaim struct {
-	Submitter string     `protobuf:"bytes,1,opt,name=submitter,proto3" json:"submitter,omitempty"`
-	Claim     *types.Any `protobuf:"bytes,2,opt,name=claim,proto3" json:"claim,omitempty"`
+// MsgVote represents a message that supports submitting a vote for
+// an arbitrary oracle Claim.
+type MsgVote struct {
+	Signer string     `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	Claim  *types.Any `protobuf:"bytes,2,opt,name=claim,proto3" json:"claim,omitempty"`
+	Salt   string     `protobuf:"bytes,3,opt,name=salt,proto3" json:"salt,omitempty"`
 }
 
-func (m *MsgCreateClaim) Reset()         { *m = MsgCreateClaim{} }
-func (m *MsgCreateClaim) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaim) ProtoMessage()    {}
-func (*MsgCreateClaim) Descriptor() ([]byte, []int) {
+func (m *MsgVote) Reset()         { *m = MsgVote{} }
+func (m *MsgVote) String() string { return proto.CompactTextString(m) }
+func (*MsgVote) ProtoMessage()    {}
+func (*MsgVote) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cdb4927eb3923422, []int{0}
 }
-func (m *MsgCreateClaim) XXX_Unmarshal(b []byte) error {
+func (m *MsgVote) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateClaim) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateClaim.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgVote.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -59,36 +60,36 @@ func (m *MsgCreateClaim) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateClaim) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaim.Merge(m, src)
+func (m *MsgVote) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgVote.Merge(m, src)
 }
-func (m *MsgCreateClaim) XXX_Size() int {
+func (m *MsgVote) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateClaim) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaim.DiscardUnknown(m)
+func (m *MsgVote) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgVote.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateClaim proto.InternalMessageInfo
+var xxx_messageInfo_MsgVote proto.InternalMessageInfo
 
-// MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type.
-type MsgCreateClaimResponse struct {
+// MsgVoteResponse defines the Msg/SubmitEvidence response type.
+type MsgVoteResponse struct {
 	// hash defines the hash of the evidence.
 	Hash []byte `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
-func (m *MsgCreateClaimResponse) Reset()         { *m = MsgCreateClaimResponse{} }
-func (m *MsgCreateClaimResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClaimResponse) ProtoMessage()    {}
-func (*MsgCreateClaimResponse) Descriptor() ([]byte, []int) {
+func (m *MsgVoteResponse) Reset()         { *m = MsgVoteResponse{} }
+func (m *MsgVoteResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgVoteResponse) ProtoMessage()    {}
+func (*MsgVoteResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cdb4927eb3923422, []int{1}
 }
-func (m *MsgCreateClaimResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgVoteResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateClaimResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgVoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateClaimResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgVoteResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -98,24 +99,115 @@ func (m *MsgCreateClaimResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateClaimResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClaimResponse.Merge(m, src)
+func (m *MsgVoteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgVoteResponse.Merge(m, src)
 }
-func (m *MsgCreateClaimResponse) XXX_Size() int {
+func (m *MsgVoteResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateClaimResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClaimResponse.DiscardUnknown(m)
+func (m *MsgVoteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgVoteResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateClaimResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgVoteResponse proto.InternalMessageInfo
 
-func (m *MsgCreateClaimResponse) GetHash() []byte {
+func (m *MsgVoteResponse) GetHash() []byte {
 	if m != nil {
 		return m.Hash
 	}
 	return nil
 }
+
+// MsgPrevote - sdk.Msg for prevoting on an array of oracle claim types.
+// The purpose of the prevote is to hide vote for data with hashes formatted as hex string:
+// SHA256("{salt}:{data_cannonical_json}:{voter}")
+type MsgPrevote struct {
+	Hash   []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
+}
+
+func (m *MsgPrevote) Reset()         { *m = MsgPrevote{} }
+func (m *MsgPrevote) String() string { return proto.CompactTextString(m) }
+func (*MsgPrevote) ProtoMessage()    {}
+func (*MsgPrevote) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cdb4927eb3923422, []int{2}
+}
+func (m *MsgPrevote) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPrevote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPrevote.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPrevote) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPrevote.Merge(m, src)
+}
+func (m *MsgPrevote) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPrevote) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPrevote.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPrevote proto.InternalMessageInfo
+
+func (m *MsgPrevote) GetHash() []byte {
+	if m != nil {
+		return m.Hash
+	}
+	return nil
+}
+
+func (m *MsgPrevote) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
+type MsgPrevoteResponse struct {
+}
+
+func (m *MsgPrevoteResponse) Reset()         { *m = MsgPrevoteResponse{} }
+func (m *MsgPrevoteResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgPrevoteResponse) ProtoMessage()    {}
+func (*MsgPrevoteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cdb4927eb3923422, []int{3}
+}
+func (m *MsgPrevoteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPrevoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPrevoteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPrevoteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPrevoteResponse.Merge(m, src)
+}
+func (m *MsgPrevoteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPrevoteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPrevoteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPrevoteResponse proto.InternalMessageInfo
 
 // MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
 // to another address, must be signed by an active validator
@@ -128,7 +220,7 @@ func (m *MsgDelegateFeedConsent) Reset()         { *m = MsgDelegateFeedConsent{}
 func (m *MsgDelegateFeedConsent) String() string { return proto.CompactTextString(m) }
 func (*MsgDelegateFeedConsent) ProtoMessage()    {}
 func (*MsgDelegateFeedConsent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cdb4927eb3923422, []int{2}
+	return fileDescriptor_cdb4927eb3923422, []int{4}
 }
 func (m *MsgDelegateFeedConsent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -179,7 +271,7 @@ func (m *MsgDelegateFeedConsentResponse) Reset()         { *m = MsgDelegateFeedC
 func (m *MsgDelegateFeedConsentResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgDelegateFeedConsentResponse) ProtoMessage()    {}
 func (*MsgDelegateFeedConsentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cdb4927eb3923422, []int{3}
+	return fileDescriptor_cdb4927eb3923422, []int{5}
 }
 func (m *MsgDelegateFeedConsentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -209,8 +301,10 @@ func (m *MsgDelegateFeedConsentResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDelegateFeedConsentResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgCreateClaim)(nil), "r3l.oracle.v1beta1.MsgCreateClaim")
-	proto.RegisterType((*MsgCreateClaimResponse)(nil), "r3l.oracle.v1beta1.MsgCreateClaimResponse")
+	proto.RegisterType((*MsgVote)(nil), "r3l.oracle.v1beta1.MsgVote")
+	proto.RegisterType((*MsgVoteResponse)(nil), "r3l.oracle.v1beta1.MsgVoteResponse")
+	proto.RegisterType((*MsgPrevote)(nil), "r3l.oracle.v1beta1.MsgPrevote")
+	proto.RegisterType((*MsgPrevoteResponse)(nil), "r3l.oracle.v1beta1.MsgPrevoteResponse")
 	proto.RegisterType((*MsgDelegateFeedConsent)(nil), "r3l.oracle.v1beta1.MsgDelegateFeedConsent")
 	proto.RegisterType((*MsgDelegateFeedConsentResponse)(nil), "r3l.oracle.v1beta1.MsgDelegateFeedConsentResponse")
 }
@@ -218,43 +312,46 @@ func init() {
 func init() { proto.RegisterFile("oracle/v1beta/tx.proto", fileDescriptor_cdb4927eb3923422) }
 
 var fileDescriptor_cdb4927eb3923422 = []byte{
-	// 403 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xb1, 0x6e, 0xd4, 0x30,
-	0x18, 0xc7, 0x63, 0x68, 0x51, 0xe3, 0x22, 0x06, 0x53, 0x55, 0x47, 0x84, 0xdc, 0x28, 0xd3, 0x09,
-	0x51, 0x9b, 0xde, 0x89, 0x85, 0x8d, 0x1e, 0x62, 0x2b, 0x43, 0x46, 0x24, 0x84, 0x9c, 0xdc, 0x87,
-	0x2f, 0x92, 0x13, 0x9f, 0x6c, 0xe7, 0xd4, 0xbc, 0x01, 0x23, 0x8f, 0xd0, 0x91, 0x07, 0xe0, 0x21,
-	0x10, 0x53, 0x47, 0x24, 0x16, 0x94, 0x5b, 0x78, 0x0c, 0x94, 0xf8, 0xd2, 0x52, 0x71, 0x88, 0x6e,
-	0xfe, 0xbe, 0xff, 0x2f, 0xdf, 0xff, 0xfb, 0xc7, 0xc6, 0x87, 0xda, 0x88, 0x5c, 0x01, 0x5f, 0x9d,
-	0x64, 0xe0, 0x04, 0x77, 0xe7, 0x6c, 0x69, 0xb4, 0xd3, 0x84, 0x98, 0xa9, 0x62, 0x5e, 0x63, 0x5e,
-	0x3b, 0x89, 0x0e, 0xa4, 0x96, 0xba, 0x97, 0x79, 0x77, 0xf2, 0x64, 0xf4, 0x48, 0x6a, 0x2d, 0x15,
-	0xf0, 0xbe, 0xca, 0xea, 0x0f, 0x5c, 0x54, 0xcd, 0x20, 0xe5, 0xda, 0x96, 0xda, 0xbe, 0xf7, 0xdf,
-	0xf8, 0xc2, 0x4b, 0x89, 0xc6, 0x0f, 0xce, 0xac, 0x9c, 0x19, 0x10, 0x0e, 0x66, 0x4a, 0x14, 0x25,
-	0x79, 0x8c, 0x43, 0x5b, 0x67, 0x65, 0xe1, 0x1c, 0x98, 0x11, 0x8a, 0xd1, 0x38, 0x4c, 0xaf, 0x1b,
-	0xe4, 0x39, 0xde, 0xcd, 0x3b, 0x6c, 0x74, 0x27, 0x46, 0xe3, 0xfd, 0xc9, 0x01, 0xf3, 0xae, 0x6c,
-	0x70, 0x65, 0x2f, 0xab, 0xe6, 0x34, 0xfc, 0xf6, 0xe5, 0x78, 0xb7, 0x9f, 0x96, 0x7a, 0xfa, 0xc5,
-	0xde, 0xc7, 0x8b, 0xa3, 0xe0, 0xd7, 0xc5, 0x51, 0x90, 0x3c, 0xc5, 0x87, 0x37, 0x0d, 0x53, 0xb0,
-	0x4b, 0x5d, 0x59, 0x20, 0x04, 0xef, 0x2c, 0x84, 0x5d, 0x8c, 0x76, 0x62, 0x34, 0xbe, 0x9f, 0xf6,
-	0xe7, 0x24, 0xed, 0xe9, 0x57, 0xa0, 0x40, 0x0a, 0x07, 0xaf, 0x01, 0xe6, 0xb3, 0x8e, 0xad, 0x1c,
-	0x89, 0xf0, 0xde, 0x7c, 0xd3, 0xde, 0x6c, 0x79, 0x55, 0x77, 0x11, 0x56, 0x42, 0x15, 0x73, 0xe1,
-	0xb4, 0xe9, 0x17, 0x0d, 0xd3, 0xeb, 0x46, 0x12, 0x63, 0xba, 0x7d, 0xe6, 0xb0, 0xc9, 0xe4, 0x07,
-	0xc2, 0x77, 0xcf, 0xac, 0x24, 0xef, 0xf0, 0xfe, 0x9f, 0x7f, 0x26, 0x61, 0x7f, 0x5f, 0x06, 0xbb,
-	0x19, 0x26, 0x7a, 0xf2, 0x7f, 0xe6, 0x2a, 0x70, 0x8d, 0x1f, 0x6e, 0x4b, 0xf6, 0xaf, 0x11, 0x5b,
-	0xd8, 0x68, 0x72, 0x7b, 0x76, 0xb0, 0x3d, 0x7d, 0xf3, 0xb9, 0xa5, 0xe8, 0x6b, 0x4b, 0xd1, 0x65,
-	0x4b, 0xd1, 0xcf, 0x96, 0xa2, 0x4f, 0x6b, 0x1a, 0x5c, 0xae, 0x69, 0xf0, 0x7d, 0x4d, 0x83, 0xb7,
-	0xcf, 0x64, 0xe1, 0x16, 0x75, 0xc6, 0x72, 0x5d, 0x72, 0x03, 0x0a, 0x56, 0xa2, 0x72, 0xc7, 0xb9,
-	0x2e, 0xcb, 0xba, 0x2a, 0x5c, 0xc3, 0xcd, 0x54, 0xf1, 0x73, 0xbe, 0x79, 0xac, 0xae, 0x59, 0x82,
-	0xcd, 0xee, 0xf5, 0x77, 0x3f, 0xfd, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x64, 0xfd, 0x01, 0x1a, 0xc3,
-	0x02, 0x00, 0x00,
+	// 454 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4d, 0x8b, 0x13, 0x41,
+	0x10, 0x9d, 0xce, 0x66, 0x3f, 0x52, 0x0a, 0x42, 0x1b, 0x42, 0x1c, 0xa5, 0x37, 0x8c, 0x28, 0x41,
+	0xd8, 0x6e, 0x37, 0x41, 0x10, 0x6f, 0xee, 0x8a, 0x78, 0x89, 0xe8, 0x1c, 0x3c, 0x78, 0x91, 0xce,
+	0xa4, 0xed, 0x0c, 0xf4, 0x4c, 0x87, 0xe9, 0xce, 0xb0, 0xf9, 0x07, 0x1e, 0xbd, 0x7a, 0xdb, 0xa3,
+	0x3f, 0xc0, 0x1f, 0x21, 0x9e, 0xf6, 0xe8, 0x51, 0x92, 0x8b, 0x3f, 0x43, 0xe6, 0xa3, 0x93, 0x05,
+	0xb3, 0xcb, 0xde, 0xaa, 0xea, 0xbd, 0x57, 0xaf, 0xe6, 0xcd, 0x0c, 0x74, 0x74, 0xc6, 0x23, 0x25,
+	0x58, 0x7e, 0x3c, 0x16, 0x96, 0x33, 0x7b, 0x46, 0x67, 0x99, 0xb6, 0x1a, 0xe3, 0x6c, 0xa8, 0x68,
+	0x85, 0xd1, 0x0a, 0x3b, 0xf6, 0xdb, 0x52, 0x4b, 0x5d, 0xc2, 0xac, 0xa8, 0x2a, 0xa6, 0x7f, 0x4f,
+	0x6a, 0x2d, 0x95, 0x60, 0x65, 0x37, 0x9e, 0x7f, 0x66, 0x3c, 0x5d, 0x38, 0x28, 0xd2, 0x26, 0xd1,
+	0xe6, 0x53, 0xa5, 0xa9, 0x9a, 0x0a, 0x0a, 0x72, 0xd8, 0x1f, 0x19, 0xf9, 0x41, 0x5b, 0x81, 0x3b,
+	0xb0, 0x67, 0x62, 0x99, 0x8a, 0xac, 0x8b, 0x7a, 0xa8, 0xdf, 0x0a, 0xeb, 0x0e, 0x3f, 0x83, 0xdd,
+	0x48, 0xf1, 0x38, 0xe9, 0x36, 0x7a, 0xa8, 0x7f, 0x6b, 0xd0, 0xa6, 0x95, 0x11, 0x75, 0x46, 0xf4,
+	0x65, 0xba, 0x38, 0x69, 0xfd, 0xfa, 0x71, 0xb4, 0x7b, 0x5a, 0xd0, 0xc2, 0x8a, 0x8d, 0x31, 0x34,
+	0x0d, 0x57, 0xb6, 0xbb, 0x53, 0x2e, 0x2b, 0xeb, 0x17, 0x07, 0x5f, 0xce, 0x0f, 0xbd, 0xbf, 0xe7,
+	0x87, 0x5e, 0xf0, 0x08, 0xee, 0xd4, 0xbe, 0xa1, 0x30, 0x33, 0x9d, 0x1a, 0x51, 0x08, 0xa6, 0xdc,
+	0x4c, 0xbb, 0xcd, 0x1e, 0xea, 0xdf, 0x0e, 0xcb, 0x3a, 0x78, 0x0e, 0x30, 0x32, 0xf2, 0x5d, 0x26,
+	0xf2, 0xe2, 0x42, 0xc7, 0x40, 0x1b, 0xc6, 0xa5, 0xab, 0x1b, 0x97, 0xaf, 0x0e, 0xda, 0x80, 0x37,
+	0x4a, 0xe7, 0x11, 0x84, 0xd0, 0x19, 0x19, 0xf9, 0x4a, 0x28, 0x21, 0xb9, 0x15, 0xaf, 0x85, 0x98,
+	0x9c, 0x16, 0xf3, 0xd4, 0x62, 0x1f, 0x0e, 0x26, 0xf5, 0xb8, 0x7e, 0xfe, 0x75, 0x8f, 0x1f, 0x40,
+	0x2b, 0xe7, 0x2a, 0x9e, 0x70, 0xab, 0x9d, 0xcd, 0x66, 0x10, 0xf4, 0x80, 0x6c, 0xdf, 0xe9, 0x5c,
+	0x07, 0xdf, 0x1a, 0xb0, 0x33, 0x32, 0x12, 0xbf, 0x81, 0x66, 0x99, 0xf4, 0x7d, 0xfa, 0xff, 0x5b,
+	0xa5, 0x75, 0x1c, 0xfe, 0xc3, 0x6b, 0xc0, 0x75, 0x56, 0xef, 0x61, 0xdf, 0x85, 0x42, 0xae, 0xe0,
+	0xd7, 0xb8, 0xff, 0xf8, 0x7a, 0x7c, 0xbd, 0x72, 0x0e, 0x77, 0xb7, 0xe5, 0xf2, 0xe4, 0x0a, 0xf9,
+	0x16, 0xae, 0x3f, 0xb8, 0x39, 0xd7, 0xd9, 0x9e, 0xbc, 0xfd, 0xbe, 0x24, 0xe8, 0xe7, 0x92, 0xa0,
+	0x8b, 0x25, 0x41, 0x7f, 0x96, 0x04, 0x7d, 0x5d, 0x11, 0xef, 0x62, 0x45, 0xbc, 0xdf, 0x2b, 0xe2,
+	0x7d, 0x7c, 0x2a, 0x63, 0x3b, 0x9d, 0x8f, 0x69, 0xa4, 0x13, 0x96, 0x09, 0x25, 0x72, 0x9e, 0xda,
+	0xa3, 0x48, 0x27, 0xc9, 0x3c, 0x8d, 0xed, 0x82, 0x65, 0x43, 0xc5, 0xce, 0x58, 0xfd, 0xeb, 0xd8,
+	0xc5, 0x4c, 0x98, 0xf1, 0x5e, 0xf9, 0x59, 0x0e, 0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0x11, 0xed,
+	0x57, 0x86, 0x51, 0x03, 0x00, 0x00,
 }
 
-func (this *MsgCreateClaimResponse) Equal(that interface{}) bool {
+func (this *MsgVoteResponse) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*MsgCreateClaimResponse)
+	that1, ok := that.(*MsgVoteResponse)
 	if !ok {
-		that2, ok := that.(MsgCreateClaimResponse)
+		that2, ok := that.(MsgVoteResponse)
 		if ok {
 			that1 = &that2
 		} else {
@@ -267,6 +364,54 @@ func (this *MsgCreateClaimResponse) Equal(that interface{}) bool {
 		return false
 	}
 	if !bytes.Equal(this.Hash, that1.Hash) {
+		return false
+	}
+	return true
+}
+func (this *MsgPrevote) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*MsgPrevote)
+	if !ok {
+		that2, ok := that.(MsgPrevote)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Hash, that1.Hash) {
+		return false
+	}
+	if this.Signer != that1.Signer {
+		return false
+	}
+	return true
+}
+func (this *MsgPrevoteResponse) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*MsgPrevoteResponse)
+	if !ok {
+		that2, ok := that.(MsgPrevoteResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
 		return false
 	}
 	return true
@@ -332,8 +477,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateClaim submits an arbitrary oracle Claim
-	CreateClaim(ctx context.Context, in *MsgCreateClaim, opts ...grpc.CallOption) (*MsgCreateClaimResponse, error)
+	// Vote submits an arbitrary oracle Claim
+	Vote(ctx context.Context, in *MsgVote, opts ...grpc.CallOption) (*MsgVoteResponse, error)
+	// Prevote submits a prevote for a Claim
+	Prevote(ctx context.Context, in *MsgPrevote, opts ...grpc.CallOption) (*MsgPrevoteResponse, error)
 	// DelegateFeedConsent delegates oracle claim submission permission from the validator to
 	// an arbitrary address
 	DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeedConsent, opts ...grpc.CallOption) (*MsgDelegateFeedConsentResponse, error)
@@ -347,9 +494,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateClaim(ctx context.Context, in *MsgCreateClaim, opts ...grpc.CallOption) (*MsgCreateClaimResponse, error) {
-	out := new(MsgCreateClaimResponse)
-	err := c.cc.Invoke(ctx, "/r3l.oracle.v1beta1.Msg/CreateClaim", in, out, opts...)
+func (c *msgClient) Vote(ctx context.Context, in *MsgVote, opts ...grpc.CallOption) (*MsgVoteResponse, error) {
+	out := new(MsgVoteResponse)
+	err := c.cc.Invoke(ctx, "/r3l.oracle.v1beta1.Msg/Vote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) Prevote(ctx context.Context, in *MsgPrevote, opts ...grpc.CallOption) (*MsgPrevoteResponse, error) {
+	out := new(MsgPrevoteResponse)
+	err := c.cc.Invoke(ctx, "/r3l.oracle.v1beta1.Msg/Prevote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -367,8 +523,10 @@ func (c *msgClient) DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeed
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateClaim submits an arbitrary oracle Claim
-	CreateClaim(context.Context, *MsgCreateClaim) (*MsgCreateClaimResponse, error)
+	// Vote submits an arbitrary oracle Claim
+	Vote(context.Context, *MsgVote) (*MsgVoteResponse, error)
+	// Prevote submits a prevote for a Claim
+	Prevote(context.Context, *MsgPrevote) (*MsgPrevoteResponse, error)
 	// DelegateFeedConsent delegates oracle claim submission permission from the validator to
 	// an arbitrary address
 	DelegateFeedConsent(context.Context, *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error)
@@ -378,8 +536,11 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) CreateClaim(ctx context.Context, req *MsgCreateClaim) (*MsgCreateClaimResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClaim not implemented")
+func (*UnimplementedMsgServer) Vote(ctx context.Context, req *MsgVote) (*MsgVoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Vote not implemented")
+}
+func (*UnimplementedMsgServer) Prevote(ctx context.Context, req *MsgPrevote) (*MsgPrevoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Prevote not implemented")
 }
 func (*UnimplementedMsgServer) DelegateFeedConsent(ctx context.Context, req *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegateFeedConsent not implemented")
@@ -389,20 +550,38 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_CreateClaim_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClaim)
+func _Msg_Vote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgVote)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateClaim(ctx, in)
+		return srv.(MsgServer).Vote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/r3l.oracle.v1beta1.Msg/CreateClaim",
+		FullMethod: "/r3l.oracle.v1beta1.Msg/Vote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClaim(ctx, req.(*MsgCreateClaim))
+		return srv.(MsgServer).Vote(ctx, req.(*MsgVote))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_Prevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPrevote)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Prevote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/r3l.oracle.v1beta1.Msg/Prevote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Prevote(ctx, req.(*MsgPrevote))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -430,8 +609,12 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateClaim",
-			Handler:    _Msg_CreateClaim_Handler,
+			MethodName: "Vote",
+			Handler:    _Msg_Vote_Handler,
+		},
+		{
+			MethodName: "Prevote",
+			Handler:    _Msg_Prevote_Handler,
 		},
 		{
 			MethodName: "DelegateFeedConsent",
@@ -442,7 +625,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "oracle/v1beta/tx.proto",
 }
 
-func (m *MsgCreateClaim) Marshal() (dAtA []byte, err error) {
+func (m *MsgVote) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -452,16 +635,23 @@ func (m *MsgCreateClaim) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateClaim) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgVote) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.Salt) > 0 {
+		i -= len(m.Salt)
+		copy(dAtA[i:], m.Salt)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Salt)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if m.Claim != nil {
 		{
 			size, err := m.Claim.MarshalToSizedBuffer(dAtA[:i])
@@ -474,17 +664,17 @@ func (m *MsgCreateClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Submitter) > 0 {
-		i -= len(m.Submitter)
-		copy(dAtA[i:], m.Submitter)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Submitter)))
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateClaimResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgVoteResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -494,12 +684,12 @@ func (m *MsgCreateClaimResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateClaimResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgVoteResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateClaimResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -511,6 +701,66 @@ func (m *MsgCreateClaimResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x22
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPrevote) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPrevote) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPrevote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Hash) > 0 {
+		i -= len(m.Hash)
+		copy(dAtA[i:], m.Hash)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Hash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPrevoteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPrevoteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -585,13 +835,13 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgCreateClaim) Size() (n int) {
+func (m *MsgVote) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Submitter)
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -599,10 +849,14 @@ func (m *MsgCreateClaim) Size() (n int) {
 		l = m.Claim.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Salt)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
-func (m *MsgCreateClaimResponse) Size() (n int) {
+func (m *MsgVoteResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -612,6 +866,32 @@ func (m *MsgCreateClaimResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	return n
+}
+
+func (m *MsgPrevote) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgPrevoteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -647,7 +927,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
+func (m *MsgVote) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -670,15 +950,15 @@ func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaim: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgVote: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaim: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgVote: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Submitter", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -706,7 +986,7 @@ func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Submitter = string(dAtA[iNdEx:postIndex])
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -744,6 +1024,38 @@ func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Salt", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Salt = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -768,7 +1080,7 @@ func (m *MsgCreateClaim) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateClaimResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgVoteResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -791,10 +1103,10 @@ func (m *MsgCreateClaimResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClaimResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgVoteResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClaimResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgVoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 4:
@@ -831,6 +1143,178 @@ func (m *MsgCreateClaimResponse) Unmarshal(dAtA []byte) error {
 				m.Hash = []byte{}
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPrevote) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPrevote: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPrevote: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hash = append(m.Hash[:0], dAtA[iNdEx:postIndex]...)
+			if m.Hash == nil {
+				m.Hash = []byte{}
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPrevoteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPrevoteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])

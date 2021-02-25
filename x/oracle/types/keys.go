@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 // Keys for oracle store, with <prefix><key> -> <value>
@@ -22,18 +23,24 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_capability"
+)
 
+// Keys for oracle store, with <prefix><key> -> <value>
+var (
 	// RoundKey defines the oracle vote store key
-	RoundKey = "vote"
+	RoundKey = []byte{0x00}
 
-	// ClaimKey defines the oracle claim store key
-	ClaimKey = "Claim"
+	// VoteKey defines the oracle claim store key
+	VoteKey = []byte{0x01}
 
 	// PendingRoundKey defines the oracle claim store key
-	PendingRoundKey = "PendingRound"
+	PendingRoundKey = []byte{0x02}
 
 	// - Delegation<val_address> -> <delegate_address>
-	FeedDelegateKeyPrefix = "Delegation" // key for validator feed delegation
+	FeedDelegateKey = []byte{0x03} // key for validator feed delegation
+
+	// - PrevoteKey <prevote_hash> -> <prevote_hash>
+	PrevoteKey = []byte{0x04}
 )
 
 // KeyPrefix helper
@@ -43,7 +50,12 @@ func KeyPrefix(p string) []byte {
 
 // GetFeedDelegateKey returns the validator for a given delegate key
 func GetFeedDelegateKey(del sdk.AccAddress) []byte {
-	return append(KeyPrefix(FeedDelegateKeyPrefix), del.Bytes()...)
+	return append(FeedDelegateKey, del.Bytes()...)
+}
+
+// GetClaimPrevoteKey returns the key for a validators prevote
+func GetClaimPrevoteKey(hash tmbytes.HexBytes) []byte {
+	return append(PrevoteKey, hash...)
 }
 
 // GetRoundKey helper

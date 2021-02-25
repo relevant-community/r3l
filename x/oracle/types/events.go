@@ -7,6 +7,9 @@ const (
 	AttributeKeyClaimHash  = "claim_hash"
 
 	EventTypeDelegateFeed = "delegate_feed"
-	AttributeKeyDeleagte  = "delegate"
+	AttributeKeyDelegate  = "delegate"
 	AttributeKeyValidator = "validator"
+
+	EventTypePrevote        = "prevote"
+	AttributeKeyPrevoteHash = "prevote_hash"
 )

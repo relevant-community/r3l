@@ -40,10 +40,10 @@ func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
 // IterateDelegateAddresses iterates over all delegate address pairs in the store
 func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val sdk.AccAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.FeedDelegateKeyPrefix))
+	iter := sdk.KVStorePrefixIterator(store, types.FeedDelegateKey)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.KeyPrefix(types.FeedDelegateKeyPrefix)))
+		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.FeedDelegateKey))
 		val := sdk.AccAddress(iter.Value())
 		if handler(del, val) {
 			break

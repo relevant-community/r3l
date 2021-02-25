@@ -16,8 +16,8 @@ var (
 // Default parameter values
 var (
 	DefaultVoteThreshold = sdk.NewDecWithPrec(50, 2) // 50%
-	DefaultClaimParams   = []ClaimParams{
-		{
+	DefaultClaimParams   = map[string](ClaimParams){
+		"test": {
 			ClaimType: "test",
 		},
 	}
@@ -55,14 +55,14 @@ func (p Params) ValidateBasic() error {
 }
 
 func validateClaimParams(i interface{}) error {
-	claimParams, ok := i.([]ClaimParams)
+	claimParams, ok := i.(map[string](ClaimParams))
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	for _, params := range claimParams {
-		if params.Prevote && params.VotePeriod <= 0 {
-			return fmt.Errorf("vote period must be positive: %d", params.VotePeriod)
+	for _, param := range claimParams {
+		if param.Prevote && param.VotePeriod == 0 {
+			return fmt.Errorf("vote period must be positive: %d", param.VotePeriod)
 		}
 	}
 

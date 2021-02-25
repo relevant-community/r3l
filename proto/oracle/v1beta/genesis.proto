@@ -7,11 +7,8 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 
 import "oracle/v1beta/params.proto";
-import "oracle/v1beta/vote.proto";
+import "oracle/v1beta/oracle.proto";
 import "oracle/v1beta/tx.proto";
-
-
-
  
 
 // GenesisState defines the oracle module's genesis state.

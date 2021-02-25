@@ -25,12 +25,12 @@ type Claim interface {
 	ValidateBasic() error
 }
 
-// MsgCreateClaimI defines the specific interface a concrete message must
+// MsgVoteI defines the specific interface a concrete message must
 // implement in order to process an oracle claim. The concrete MsgSubmitClaim
 // must be defined at the application-level.
-type MsgCreateClaimI interface {
+type MsgVoteI interface {
 	sdk.Msg
 
 	GetClaim() Claim
-	GetSubmitter() sdk.AccAddress
+	GetSigner() sdk.AccAddress
 }

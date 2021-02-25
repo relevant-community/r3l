@@ -1,6 +1,9 @@
 package types
 
 import (
+	"crypto/sha256"
+	fmt "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/relevant-community/r3l/x/oracle/exported"
 )
@@ -14,4 +17,11 @@ func NewVote(roundID uint64, claim exported.Claim, validator sdk.ValAddress, cla
 		Validator:   validator,
 		Type:        claimType,
 	}
+}
+
+// VoteHash returns the hash for a precommit given the proper args
+func VoteHash(salt string, claimHash string, signer sdk.AccAddress) []byte {
+	h := sha256.New()
+	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, claimHash, signer.String())))
+	return h.Sum(nil)
 }

@@ -20,3 +20,9 @@ message Round {
   repeated Vote votes = 3 [(gogoproto.nullable) = false];
 }
 
+// TestClaim is a concrete Claim type we use for testing
+message TestClaim {
+  int64 blockHeight = 1;
+  string claimType = 2;
+  string content = 3;
+}
