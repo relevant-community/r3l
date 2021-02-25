@@ -18,8 +18,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/relevant-community/r3l/app/params"
-	oraclekeeper "github.com/relevant-community/r3l/x/oracle/keeper"
-	oracletypes "github.com/relevant-community/r3l/x/oracle/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -112,22 +110,10 @@ func Setup(isCheckTx bool) *App {
 	return app
 }
 
-// CreateTestInput Returns a simapp with custom LiquidityKeeper
-// to avoid messing with the hooks.
+// CreateTestInput Returns an instance of our app
 func CreateTestInput() (*App, sdk.Context) {
 	app := Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	appCodec := app.AppCodec()
-
-	app.OracleKeeper = *oraclekeeper.NewKeeper(
-		appCodec,
-		app.GetKey(oracletypes.StoreKey),
-		app.GetKey(oracletypes.MemStoreKey),
-		app.StakingKeeper,
-		app.GetSubspace(oracletypes.ModuleName),
-	)
-
 	return app, ctx
 }
 
@@ -142,7 +128,7 @@ func AddTestAddrs(app *App, ctx sdk.Context, accNum int, initCoins sdk.Coins) []
 	return testAddrs
 }
 
-// SaveAccount saves the provided account into the simapp with balance based on initCoins.
+// SaveAccount saves the provided account into the app with balance based on initCoins.
 func SaveAccount(app *App, ctx sdk.Context, addr sdk.AccAddress, initCoins sdk.Coins) {
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
