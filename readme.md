@@ -33,7 +33,7 @@ starport serve
 in a new terminal window, run
 
 ```
-r3ld start-worker --from user1 --chain-id r3l --keyring-backend test
+r3ld tx oracle start-worker --from user1 --chain-id r3l --keyring-backend test -o text -y
 ```
 
 to check results, in a new terminal window, run
