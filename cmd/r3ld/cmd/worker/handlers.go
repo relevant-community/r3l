@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/relevant-community/r3l/x/oracle/client/cli"
-	"github.com/relevant-community/r3l/x/oracle/types"
+	"github.com/relevant-community/oracle/x/oracle/client/cli"
+	"github.com/relevant-community/oracle/x/oracle/types"
 	rpctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	"github.com/spf13/cobra"

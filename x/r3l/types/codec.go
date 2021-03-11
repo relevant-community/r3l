@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	exportedOracle "github.com/relevant-community/r3l/x/oracle/exported"
+	exportedOracle "github.com/relevant-community/oracle/x/oracle/exported"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {

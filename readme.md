@@ -2,7 +2,7 @@
 
 **r3l** is a blockchain application built using Cosmos SDK and Tendermint and generated with [Starport](https://github.com/tendermint/starport).
 
-This app demonstrates the usage of the [Relevant Reputation Protocol](https://github.com/relevant-community/reputation) and Cosmos off-chain workers.
+This app demonstrates the usage of the [Relevant Reputation Protocol](https://github.com/relevant-community/reputation) and the [Cosmos Oracle Module](https://github.com/relevant-community/oracle).
 
 How it works:
 
@@ -27,7 +27,7 @@ Example TODO:
 You will need to make sure you have cloned and built the Cosmos Relayer: https://github.com/cosmos/relayer
 
 ```
-starport serve
+starport serve -r
 ```
 
 in a new terminal window, run

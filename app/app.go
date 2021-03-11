@@ -86,9 +86,9 @@ import (
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
-	"github.com/relevant-community/r3l/x/oracle"
-	oraclekeeper "github.com/relevant-community/r3l/x/oracle/keeper"
-	oracletypes "github.com/relevant-community/r3l/x/oracle/types"
+	"github.com/relevant-community/oracle/x/oracle"
+	oraclekeeper "github.com/relevant-community/oracle/x/oracle/keeper"
+	oracletypes "github.com/relevant-community/oracle/x/oracle/types"
 )
 
 const Name = "r3l"
