@@ -11,7 +11,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/relevant-community/oracle v0.0.0-20210311215211-92018f6da803
-	github.com/relevant-community/reputation v0.2.1
+	github.com/relevant-community/reputation v0.3.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
 	github.com/tendermint/tendermint v0.34.3

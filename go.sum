@@ -551,6 +551,10 @@ github.com/relevant-community/oracle v0.0.0-20210311215211-92018f6da803 h1:EQPjb
 github.com/relevant-community/oracle v0.0.0-20210311215211-92018f6da803/go.mod h1:0F7+mArC7ps/fBc5pk9M3vy0tB/ce9c9b8lT3CXG0O4=
 github.com/relevant-community/reputation v0.2.1 h1:uzJMCBtQBT8SK1MSsknhCEpvFCUCNhgf/twigGV4zTY=
 github.com/relevant-community/reputation v0.2.1/go.mod h1:ZoogzPeSLRqwm+7WjPy/cFcw9phhxnq/jBVc9zPVszY=
+github.com/relevant-community/reputation v0.3.0 h1:vJ+c+6hM0D/wG98dxwZK/brfDIwozOnS3cDfOgXLQ9c=
+github.com/relevant-community/reputation v0.3.0/go.mod h1:ZoogzPeSLRqwm+7WjPy/cFcw9phhxnq/jBVc9zPVszY=
+github.com/relevant-community/reputation v0.3.1 h1:+dmcUF2hjoA9Vo6mnfFs+h9KMQ0XJnFu1hG5S9/h5+w=
+github.com/relevant-community/reputation v0.3.1/go.mod h1:ZoogzPeSLRqwm+7WjPy/cFcw9phhxnq/jBVc9zPVszY=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=

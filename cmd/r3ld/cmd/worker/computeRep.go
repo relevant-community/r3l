@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/relevant-community/r3l/x/r3l/types"
 
-	rep "github.com/relevant-community/reputation/non-deterministic"
+	rep "github.com/relevant-community/reputation/rep"
 )
 
 // ComputeReputation is the reputation worker
@@ -30,14 +30,14 @@ func computeRank(votes []*types.MsgVote, scores []*types.Score, rankSources []*t
 
 	// set personalization vector
 	for _, rankSource := range rankSources {
-		pNode := rep.NewNodeInput(rankSource.Account, 0, 0)
+		pNode := rep.NewNode(rankSource.Account, 0, 0)
 		graph.AddPersonalizationNode(pNode)
 	}
 
 	// create links
 	for _, vote := range votes {
-		from := rep.NewNodeInput(vote.Creator.String(), 0, 0)
-		to := rep.NewNodeInput(vote.To, 0, 0)
+		from := rep.NewNode(vote.Creator.String(), 0, 0)
+		to := rep.NewNode(vote.To, 0, 0)
 		graph.Link(from, to, float64(vote.Amount)/1000)
 	}
 
